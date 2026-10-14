@@ -1,0 +1,3329 @@
+{
+  "info": {
+    "name": "Zeinab Harb - Services 4-6 (Threats, Audit Logs, Reports)",
+    "description": "Sprint I - Security Incident Detection and Response Management System.\nDeveloper: Zeinab Harb.\n\nRun `python seed.py --reset`, start `python app.py`, then run the folders in order (Authentication first: it stores the tokens).",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "0. Authentication (Zeinab Harb)",
+      "item": [
+        {
+          "name": "Zeinab Harb - Login as Security Administrator",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/users/login",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "users",
+                "login"
+              ]
+            },
+            "description": "**Developer:** Zeinab Harb\n\n**Caller:** no token. **Expected:** HTTP 200.\n\nSuccessful login. Stores the token in `admin_token`.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"admin_maya\",\n  \"password\": \"Admin@1234\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "if (body.data && body.data.token) { pm.collectionVariables.set('admin_token', body.data.token); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Zeinab Harb - Login as Security Analyst",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/users/login",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "users",
+                "login"
+              ]
+            },
+            "description": "**Developer:** Zeinab Harb\n\n**Caller:** no token. **Expected:** HTTP 200.\n\nStores `analyst_token`.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"analyst_karim\",\n  \"password\": \"Analyst@1234\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "if (body.data && body.data.token) { pm.collectionVariables.set('analyst_token', body.data.token); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Zeinab Harb - Login as Regular User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/users/login",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "users",
+                "login"
+              ]
+            },
+            "description": "**Developer:** Zeinab Harb\n\n**Caller:** no token. **Expected:** HTTP 200.\n\nStores `user_token`.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"user_rami\",\n  \"password\": \"User@1234\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "if (body.data && body.data.token) { pm.collectionVariables.set('user_token', body.data.token); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Zeinab Harb - Login as Auditor",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/users/login",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "users",
+                "login"
+              ]
+            },
+            "description": "**Developer:** Zeinab Harb\n\n**Caller:** no token. **Expected:** HTTP 200.\n\nStores `auditor_token`.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"auditor_sara\",\n  \"password\": \"Auditor@1234\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "if (body.data && body.data.token) { pm.collectionVariables.set('auditor_token', body.data.token); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Zeinab Harb - Login FAILED (wrong password) - generates a LOGIN_FAILED log",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/users/login",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "users",
+                "login"
+              ]
+            },
+            "description": "**Developer:** Zeinab Harb\n\n**Caller:** no token. **Expected:** HTTP 401.\n\nFailed authentication. Creates a `LOGIN_FAILED` audit record used later by the activity report.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"user_rami\",\n  \"password\": \"Wrong@0000\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 401', () => pm.response.to.have.status(401));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "1. Threat Intelligence Service (Zeinab Harb)",
+      "item": [
+        {
+          "name": "Zeinab Harb - Add Threat Indicator - IP Address (High)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/threats",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "threats"
+              ]
+            },
+            "description": "**Developer:** Zeinab Harb\n\n**Caller:** Security Administrator. **Expected:** HTTP 201.\n\nAdds a malicious IP. The value is validated as IPv4/IPv6. Stores `threat_id`.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"threat_type\": \"IP Address\",\n  \"threat_value\": \"192.0.2.10\",\n  \"description\": \"Source of repeated RDP brute-force attempts on finance workstations\",\n  \"severity_level\": \"High\",\n  \"source\": \"Firewall logs\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 201', () => pm.response.to.have.status(201));",
+                  "pm.test('developer is Zeinab Harb', () => pm.expect(body.developer).to.eql('Zeinab Harb'));",
+                  "if (body.data && body.data.threat_id) { pm.collectionVariables.set('threat_id', body.data.threat_id); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Zeinab Harb - Add Threat Indicator - Domain (Medium)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/threats",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "threats"
+              ]
+            },
+            "description": "**Developer:** Zeinab Harb\n\n**Caller:** Security Administrator. **Expected:** HTTP 201.\n\nDomain is validated and stored lowercase (update-account-verify.net).",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"threat_type\": \"Domain\",\n  \"threat_value\": \"Update-Account-Verify.NET\",\n  \"description\": \"Phishing domain sending fake password-reset emails\",\n  \"severity_level\": \"Medium\",\n  \"source\": \"PhishTank\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 201', () => pm.response.to.have.status(201));",
+                  "pm.test('developer is Zeinab Harb', () => pm.expect(body.developer).to.eql('Zeinab Harb'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Zeinab Harb - Add Threat Indicator - File Hash SHA-256 (Critical)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/threats",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "threats"
+              ]
+            },
+            "description": "**Developer:** Zeinab Harb\n\n**Caller:** Security Administrator. **Expected:** HTTP 201.\n\nHash must be hexadecimal MD5 (32), SHA-1 (40), SHA-256 (64) or SHA-512 (128).",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"threat_type\": \"File Hash\",\n  \"threat_value\": \"8148eaa7543bb28ae98418933c20472ba74ea5036a205698dc08fdaa98b26e86\",\n  \"description\": \"SHA-256 of a ransomware dropper disguised as an invoice\",\n  \"severity_level\": \"Critical\",\n  \"source\": \"VirusTotal\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 201', () => pm.response.to.have.status(201));",
+                  "pm.test('developer is Zeinab Harb', () => pm.expect(body.developer).to.eql('Zeinab Harb'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Zeinab Harb - Add Threat Indicator - Malware Signature (Low)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/threats",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "threats"
+              ]
+            },
+            "description": "**Developer:** Zeinab Harb\n\n**Caller:** Security Administrator. **Expected:** HTTP 201.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"threat_type\": \"Malware Signature\",\n  \"threat_value\": \"Adware.BrowserHelper.X\",\n  \"description\": \"Adware bundled with a free PDF tool\",\n  \"severity_level\": \"Low\",\n  \"source\": \"Antivirus vendor\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 201', () => pm.response.to.have.status(201));",
+                  "pm.test('developer is Zeinab Harb', () => pm.expect(body.developer).to.eql('Zeinab Harb'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Zeinab Harb - Add Threat Indicator - DUPLICATE type + value (409)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/threats",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "threats"
+              ]
+            },
+            "description": "**Developer:** Zeinab Harb\n\n**Caller:** Security Administrator. **Expected:** HTTP 409.\n\nSame threat type + value already exists.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"threat_type\": \"IP Address\",\n  \"threat_value\": \"192.0.2.10\",\n  \"description\": \"Same IP again\",\n  \"severity_level\": \"Low\",\n  \"source\": \"Test\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 409', () => pm.response.to.have.status(409));",
+                  "pm.test('developer is Zeinab Harb', () => pm.expect(body.developer).to.eql('Zeinab Harb'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Zeinab Harb - Add Threat Indicator - INVALID IP (400)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/threats",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "threats"
+              ]
+            },
+            "description": "**Developer:** Zeinab Harb\n\n**Caller:** Security Administrator. **Expected:** HTTP 400.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"threat_type\": \"IP Address\",\n  \"threat_value\": \"300.12.5.1\",\n  \"description\": \"Bad IP\",\n  \"severity_level\": \"High\",\n  \"source\": \"Test\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 400', () => pm.response.to.have.status(400));",
+                  "pm.test('developer is Zeinab Harb', () => pm.expect(body.developer).to.eql('Zeinab Harb'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Zeinab Harb - Add Threat Indicator - INVALID domain and severity (400)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/threats",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "threats"
+              ]
+            },
+            "description": "**Developer:** Zeinab Harb\n\n**Caller:** Security Administrator. **Expected:** HTTP 400.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"threat_type\": \"Domain\",\n  \"threat_value\": \"not a domain\",\n  \"description\": \"Bad domain\",\n  \"severity_level\": \"Extreme\",\n  \"source\": \"Test\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 400', () => pm.response.to.have.status(400));",
+                  "pm.test('developer is Zeinab Harb', () => pm.expect(body.developer).to.eql('Zeinab Harb'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Zeinab Harb - Add Threat Indicator - INVALID hash (400)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/threats",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "threats"
+              ]
+            },
+            "description": "**Developer:** Zeinab Harb\n\n**Caller:** Security Administrator. **Expected:** HTTP 400.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"threat_type\": \"File Hash\",\n  \"threat_value\": \"12345xyz\",\n  \"description\": \"Bad hash\",\n  \"severity_level\": \"Medium\",\n  \"source\": \"Test\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 400', () => pm.response.to.have.status(400));",
+                  "pm.test('developer is Zeinab Harb', () => pm.expect(body.developer).to.eql('Zeinab Harb'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Zeinab Harb - Add Threat Indicator - MISSING fields (400)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/threats",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "threats"
+              ]
+            },
+            "description": "**Developer:** Zeinab Harb\n\n**Caller:** Security Administrator. **Expected:** HTTP 400.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"threat_type\": \"Domain\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 400', () => pm.response.to.have.status(400));",
+                  "pm.test('developer is Zeinab Harb', () => pm.expect(body.developer).to.eql('Zeinab Harb'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Zeinab Harb - Add Threat Indicator - as Analyst DENIED (403)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{analyst_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/threats",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "threats"
+              ]
+            },
+            "description": "**Developer:** Zeinab Harb\n\n**Caller:** Security Analyst. **Expected:** HTTP 403.\n\nOnly the Security Administrator can add threats.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"threat_type\": \"Domain\",\n  \"threat_value\": \"analyst-test.com\",\n  \"description\": \"x\",\n  \"severity_level\": \"Low\",\n  \"source\": \"x\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 403', () => pm.response.to.have.status(403));",
+                  "pm.test('developer is Zeinab Harb', () => pm.expect(body.developer).to.eql('Zeinab Harb'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Zeinab Harb - Retrieve All Threat Indicators - Admin",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/threats",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "threats"
+              ]
+            },
+            "description": "**Developer:** Zeinab Harb\n\n**Caller:** Security Administrator. **Expected:** HTTP 200."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('developer is Zeinab Harb', () => pm.expect(body.developer).to.eql('Zeinab Harb'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Zeinab Harb - Retrieve All Threat Indicators - Analyst",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{analyst_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/threats",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "threats"
+              ]
+            },
+            "description": "**Developer:** Zeinab Harb\n\n**Caller:** Security Analyst. **Expected:** HTTP 200."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('developer is Zeinab Harb', () => pm.expect(body.developer).to.eql('Zeinab Harb'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Zeinab Harb - Retrieve All Threat Indicators - Auditor",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auditor_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/threats",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "threats"
+              ]
+            },
+            "description": "**Developer:** Zeinab Harb\n\n**Caller:** Auditor. **Expected:** HTTP 200."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('developer is Zeinab Harb', () => pm.expect(body.developer).to.eql('Zeinab Harb'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Zeinab Harb - Retrieve All Threat Indicators - Regular User DENIED (403)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/threats",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "threats"
+              ]
+            },
+            "description": "**Developer:** Zeinab Harb\n\n**Caller:** Regular User. **Expected:** HTTP 403."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 403', () => pm.response.to.have.status(403));",
+                  "pm.test('developer is Zeinab Harb', () => pm.expect(body.developer).to.eql('Zeinab Harb'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Zeinab Harb - Retrieve All Threat Indicators - NO TOKEN (401)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/threats",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "threats"
+              ]
+            },
+            "description": "**Developer:** Zeinab Harb\n\n**Caller:** no token. **Expected:** HTTP 401."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 401', () => pm.response.to.have.status(401));",
+                  "pm.test('developer is Zeinab Harb', () => pm.expect(body.developer).to.eql('Zeinab Harb'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Zeinab Harb - Retrieve Specific Threat Indicator - existing",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{analyst_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/threats/{{threat_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "threats",
+                "{{threat_id}}"
+              ]
+            },
+            "description": "**Developer:** Zeinab Harb\n\n**Caller:** Security Analyst. **Expected:** HTTP 200."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('developer is Zeinab Harb', () => pm.expect(body.developer).to.eql('Zeinab Harb'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Zeinab Harb - Retrieve Specific Threat Indicator - non-existing (404)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/threats/99999",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "threats",
+                "99999"
+              ]
+            },
+            "description": "**Developer:** Zeinab Harb\n\n**Caller:** Security Administrator. **Expected:** HTTP 404."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 404', () => pm.response.to.have.status(404));",
+                  "pm.test('developer is Zeinab Harb', () => pm.expect(body.developer).to.eql('Zeinab Harb'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Zeinab Harb - Search Threats - by type (Domain)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{analyst_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/threats/search?type=Domain",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "threats",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "type",
+                  "value": "Domain"
+                }
+              ]
+            },
+            "description": "**Developer:** Zeinab Harb\n\n**Caller:** Security Analyst. **Expected:** HTTP 200."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('developer is Zeinab Harb', () => pm.expect(body.developer).to.eql('Zeinab Harb'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Zeinab Harb - Search Threats - by severity (Critical)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/threats/search?severity=Critical",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "threats",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "severity",
+                  "value": "Critical"
+                }
+              ]
+            },
+            "description": "**Developer:** Zeinab Harb\n\n**Caller:** Security Administrator. **Expected:** HTTP 200."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('developer is Zeinab Harb', () => pm.expect(body.developer).to.eql('Zeinab Harb'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Zeinab Harb - Search Threats - by source (partial: soc)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auditor_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/threats/search?source=soc",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "threats",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "source",
+                  "value": "soc"
+                }
+              ]
+            },
+            "description": "**Developer:** Zeinab Harb\n\n**Caller:** Auditor. **Expected:** HTTP 200."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('developer is Zeinab Harb', () => pm.expect(body.developer).to.eql('Zeinab Harb'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Zeinab Harb - Search Threats - by value (partial: 192.0.2)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{analyst_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/threats/search?value=192.0.2",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "threats",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "value",
+                  "value": "192.0.2"
+                }
+              ]
+            },
+            "description": "**Developer:** Zeinab Harb\n\n**Caller:** Security Analyst. **Expected:** HTTP 200."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('developer is Zeinab Harb', () => pm.expect(body.developer).to.eql('Zeinab Harb'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Zeinab Harb - Search Threats - combined (type=IP Address & severity=High)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/threats/search?type=IP%20Address&severity=High",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "threats",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "type",
+                  "value": "IP%20Address"
+                },
+                {
+                  "key": "severity",
+                  "value": "High"
+                }
+              ]
+            },
+            "description": "**Developer:** Zeinab Harb\n\n**Caller:** Security Administrator. **Expected:** HTTP 200."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('developer is Zeinab Harb', () => pm.expect(body.developer).to.eql('Zeinab Harb'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Zeinab Harb - Search Threats - INVALID severity (400)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/threats/search?severity=Huge",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "threats",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "severity",
+                  "value": "Huge"
+                }
+              ]
+            },
+            "description": "**Developer:** Zeinab Harb\n\n**Caller:** Security Administrator. **Expected:** HTTP 400."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 400', () => pm.response.to.have.status(400));",
+                  "pm.test('developer is Zeinab Harb', () => pm.expect(body.developer).to.eql('Zeinab Harb'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Zeinab Harb - Search Threats - SQL injection attempt returns 0",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/threats/search?value=' OR '1'='1",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "threats",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "value",
+                  "value": "' OR '1'='1"
+                }
+              ]
+            },
+            "description": "**Developer:** Zeinab Harb\n\n**Caller:** Security Administrator. **Expected:** HTTP 200.\n\nThe value is a bound SQL parameter, so the injection string is just text and matches nothing."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('developer is Zeinab Harb', () => pm.expect(body.developer).to.eql('Zeinab Harb'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Zeinab Harb - Update Threat - BEFORE (retrieve)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/threats/{{threat_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "threats",
+                "{{threat_id}}"
+              ]
+            },
+            "description": "**Developer:** Zeinab Harb\n\n**Caller:** Security Administrator. **Expected:** HTTP 200."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('developer is Zeinab Harb', () => pm.expect(body.developer).to.eql('Zeinab Harb'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Zeinab Harb - Update Threat Information",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/threats/{{threat_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "threats",
+                "{{threat_id}}"
+              ]
+            },
+            "description": "**Developer:** Zeinab Harb\n\n**Caller:** Security Administrator. **Expected:** HTTP 200.\n\nOnly description, severity_level and source can change. Response shows before and after.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"description\": \"Confirmed C2 callback address used after the RDP brute force\",\n  \"severity_level\": \"Critical\",\n  \"source\": \"Firewall logs + CERT advisory\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('developer is Zeinab Harb', () => pm.expect(body.developer).to.eql('Zeinab Harb'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Zeinab Harb - Update Threat - AFTER (retrieve)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/threats/{{threat_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "threats",
+                "{{threat_id}}"
+              ]
+            },
+            "description": "**Developer:** Zeinab Harb\n\n**Caller:** Security Administrator. **Expected:** HTTP 200."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('developer is Zeinab Harb', () => pm.expect(body.developer).to.eql('Zeinab Harb'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Zeinab Harb - Update Threat - change read-only value (400)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/threats/{{threat_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "threats",
+                "{{threat_id}}"
+              ]
+            },
+            "description": "**Developer:** Zeinab Harb\n\n**Caller:** Security Administrator. **Expected:** HTTP 400.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"threat_value\": \"192.0.2.11\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 400', () => pm.response.to.have.status(400));",
+                  "pm.test('developer is Zeinab Harb', () => pm.expect(body.developer).to.eql('Zeinab Harb'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Zeinab Harb - Update Threat - INVALID severity (400)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/threats/{{threat_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "threats",
+                "{{threat_id}}"
+              ]
+            },
+            "description": "**Developer:** Zeinab Harb\n\n**Caller:** Security Administrator. **Expected:** HTTP 400.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"severity_level\": \"Severe\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 400', () => pm.response.to.have.status(400));",
+                  "pm.test('developer is Zeinab Harb', () => pm.expect(body.developer).to.eql('Zeinab Harb'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Zeinab Harb - Update Threat - as Auditor DENIED (403)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auditor_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/threats/{{threat_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "threats",
+                "{{threat_id}}"
+              ]
+            },
+            "description": "**Developer:** Zeinab Harb\n\n**Caller:** Auditor. **Expected:** HTTP 403.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"source\": \"x\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 403', () => pm.response.to.have.status(403));",
+                  "pm.test('developer is Zeinab Harb', () => pm.expect(body.developer).to.eql('Zeinab Harb'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Zeinab Harb - Delete Threat - as Analyst DENIED (403)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{analyst_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/threats/{{threat_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "threats",
+                "{{threat_id}}"
+              ]
+            },
+            "description": "**Developer:** Zeinab Harb\n\n**Caller:** Security Analyst. **Expected:** HTTP 403."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 403', () => pm.response.to.have.status(403));",
+                  "pm.test('developer is Zeinab Harb', () => pm.expect(body.developer).to.eql('Zeinab Harb'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Zeinab Harb - Delete Threat - Admin",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/threats/{{threat_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "threats",
+                "{{threat_id}}"
+              ]
+            },
+            "description": "**Developer:** Zeinab Harb\n\n**Caller:** Security Administrator. **Expected:** HTTP 200."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('developer is Zeinab Harb', () => pm.expect(body.developer).to.eql('Zeinab Harb'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Zeinab Harb - Delete Threat - already deleted (404)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/threats/{{threat_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "threats",
+                "{{threat_id}}"
+              ]
+            },
+            "description": "**Developer:** Zeinab Harb\n\n**Caller:** Security Administrator. **Expected:** HTTP 404."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 404', () => pm.response.to.have.status(404));",
+                  "pm.test('developer is Zeinab Harb', () => pm.expect(body.developer).to.eql('Zeinab Harb'));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "2. Security Audit Logging Service (Zeinab Harb)",
+      "item": [
+        {
+          "name": "Zeinab Harb - Create Log Record - Analyst activity",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/logs",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "logs"
+              ]
+            },
+            "description": "**Developer:** Zeinab Harb\n\n**Caller:** Security Administrator. **Expected:** HTTP 201.\n\nStores `log_id`.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"user_id\": 2,\n  \"action_performed\": \"MALWARE_SCAN_COMPLETED\",\n  \"description\": \"Weekly malware scan finished on the main web server\",\n  \"severity_level\": \"Information\",\n  \"related_service\": \"Asset Management\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 201', () => pm.response.to.have.status(201));",
+                  "pm.test('developer is Zeinab Harb', () => pm.expect(body.developer).to.eql('Zeinab Harb'));",
+                  "if (body.data && body.data.log_id) { pm.collectionVariables.set('log_id', body.data.log_id); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Zeinab Harb - Create Log Record - Regular User activity",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/logs",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "logs"
+              ]
+            },
+            "description": "**Developer:** Zeinab Harb\n\n**Caller:** Security Administrator. **Expected:** HTTP 201.\n\nThe action is normalised to USB_DEVICE_BLOCKED.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"user_id\": 4,\n  \"action_performed\": \"USB device blocked\",\n  \"description\": \"Unauthorized USB storage device blocked on Finance Workstation 07\",\n  \"severity_level\": \"Warning\",\n  \"related_service\": \"Incident Management\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 201', () => pm.response.to.have.status(201));",
+                  "pm.test('developer is Zeinab Harb', () => pm.expect(body.developer).to.eql('Zeinab Harb'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Zeinab Harb - Create Log Record - Auditor activity",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/logs",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "logs"
+              ]
+            },
+            "description": "**Developer:** Zeinab Harb\n\n**Caller:** Security Administrator. **Expected:** HTTP 201.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"user_id\": 5,\n  \"action_performed\": \"COMPLIANCE_EXPORT\",\n  \"description\": \"Quarterly audit-log export generated\",\n  \"severity_level\": \"Information\",\n  \"related_service\": \"Security Audit Logging\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 201', () => pm.response.to.have.status(201));",
+                  "pm.test('developer is Zeinab Harb', () => pm.expect(body.developer).to.eql('Zeinab Harb'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Zeinab Harb - Create Log Record - Critical event",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/logs",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "logs"
+              ]
+            },
+            "description": "**Developer:** Zeinab Harb\n\n**Caller:** Security Administrator. **Expected:** HTTP 201.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"user_id\": 1,\n  \"action_performed\": \"DATA_EXFILTRATION_DETECTED\",\n  \"description\": \"Large outbound transfer from the customer database\",\n  \"severity_level\": \"Critical\",\n  \"related_service\": \"Incident Management\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 201', () => pm.response.to.have.status(201));",
+                  "pm.test('developer is Zeinab Harb', () => pm.expect(body.developer).to.eql('Zeinab Harb'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Zeinab Harb - Create Log Record - INVALID input (400)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/logs",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "logs"
+              ]
+            },
+            "description": "**Developer:** Zeinab Harb\n\n**Caller:** Security Administrator. **Expected:** HTTP 400.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"user_id\": \"two\",\n  \"action_performed\": \"!\",\n  \"description\": \"x\",\n  \"severity_level\": \"Loud\",\n  \"related_service\": \"Kitchen\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 400', () => pm.response.to.have.status(400));",
+                  "pm.test('developer is Zeinab Harb', () => pm.expect(body.developer).to.eql('Zeinab Harb'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Zeinab Harb - Create Log Record - user does not exist (404)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/logs",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "logs"
+              ]
+            },
+            "description": "**Developer:** Zeinab Harb\n\n**Caller:** Security Administrator. **Expected:** HTTP 404.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"user_id\": 99999,\n  \"action_performed\": \"TEST_EVENT\",\n  \"description\": \"x\",\n  \"severity_level\": \"Error\",\n  \"related_service\": \"Incident Management\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 404', () => pm.response.to.have.status(404));",
+                  "pm.test('developer is Zeinab Harb', () => pm.expect(body.developer).to.eql('Zeinab Harb'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Zeinab Harb - Create Log Record - as Auditor DENIED (403)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auditor_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/logs",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "logs"
+              ]
+            },
+            "description": "**Developer:** Zeinab Harb\n\n**Caller:** Auditor. **Expected:** HTTP 403.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"user_id\": 5,\n  \"action_performed\": \"TEST_EVENT\",\n  \"description\": \"x\",\n  \"severity_level\": \"Error\",\n  \"related_service\": \"Incident Management\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 403', () => pm.response.to.have.status(403));",
+                  "pm.test('developer is Zeinab Harb', () => pm.expect(body.developer).to.eql('Zeinab Harb'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Zeinab Harb - Retrieve All Logs - Admin",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/logs",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "logs"
+              ]
+            },
+            "description": "**Developer:** Zeinab Harb\n\n**Caller:** Security Administrator. **Expected:** HTTP 200."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('developer is Zeinab Harb', () => pm.expect(body.developer).to.eql('Zeinab Harb'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Zeinab Harb - Retrieve All Logs - Auditor",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auditor_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/logs",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "logs"
+              ]
+            },
+            "description": "**Developer:** Zeinab Harb\n\n**Caller:** Auditor. **Expected:** HTTP 200."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('developer is Zeinab Harb', () => pm.expect(body.developer).to.eql('Zeinab Harb'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Zeinab Harb - Retrieve All Logs - Analyst DENIED (403)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{analyst_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/logs",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "logs"
+              ]
+            },
+            "description": "**Developer:** Zeinab Harb\n\n**Caller:** Security Analyst. **Expected:** HTTP 403."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 403', () => pm.response.to.have.status(403));",
+                  "pm.test('developer is Zeinab Harb', () => pm.expect(body.developer).to.eql('Zeinab Harb'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Zeinab Harb - Retrieve Specific Log - existing",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auditor_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/logs/{{log_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "logs",
+                "{{log_id}}"
+              ]
+            },
+            "description": "**Developer:** Zeinab Harb\n\n**Caller:** Auditor. **Expected:** HTTP 200."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('developer is Zeinab Harb', () => pm.expect(body.developer).to.eql('Zeinab Harb'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Zeinab Harb - Retrieve Specific Log - Analyst allowed",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{analyst_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/logs/{{log_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "logs",
+                "{{log_id}}"
+              ]
+            },
+            "description": "**Developer:** Zeinab Harb\n\n**Caller:** Security Analyst. **Expected:** HTTP 200."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('developer is Zeinab Harb', () => pm.expect(body.developer).to.eql('Zeinab Harb'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Zeinab Harb - Retrieve Specific Log - invalid id (404)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/logs/99999",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "logs",
+                "99999"
+              ]
+            },
+            "description": "**Developer:** Zeinab Harb\n\n**Caller:** Security Administrator. **Expected:** HTTP 404."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 404', () => pm.response.to.have.status(404));",
+                  "pm.test('developer is Zeinab Harb', () => pm.expect(body.developer).to.eql('Zeinab Harb'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Zeinab Harb - Search Logs - by user (username)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auditor_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/logs/search?user=user_rami",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "logs",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "user",
+                  "value": "user_rami"
+                }
+              ]
+            },
+            "description": "**Developer:** Zeinab Harb\n\n**Caller:** Auditor. **Expected:** HTTP 200."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('developer is Zeinab Harb', () => pm.expect(body.developer).to.eql('Zeinab Harb'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Zeinab Harb - Search Logs - by user (id)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/logs/search?user=2",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "logs",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "user",
+                  "value": "2"
+                }
+              ]
+            },
+            "description": "**Developer:** Zeinab Harb\n\n**Caller:** Security Administrator. **Expected:** HTTP 200."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('developer is Zeinab Harb', () => pm.expect(body.developer).to.eql('Zeinab Harb'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Zeinab Harb - Search Logs - by date (today, UTC)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auditor_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/logs/search?date={{today}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "logs",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "date",
+                  "value": "{{today}}"
+                }
+              ]
+            },
+            "description": "**Developer:** Zeinab Harb\n\n**Caller:** Auditor. **Expected:** HTTP 200."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('developer is Zeinab Harb', () => pm.expect(body.developer).to.eql('Zeinab Harb'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Zeinab Harb - Search Logs - by action (LOGIN_FAILED)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{analyst_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/logs/search?action=LOGIN_FAILED",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "logs",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "action",
+                  "value": "LOGIN_FAILED"
+                }
+              ]
+            },
+            "description": "**Developer:** Zeinab Harb\n\n**Caller:** Security Analyst. **Expected:** HTTP 200."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('developer is Zeinab Harb', () => pm.expect(body.developer).to.eql('Zeinab Harb'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Zeinab Harb - Search Logs - by severity (Warning)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/logs/search?severity=Warning",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "logs",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "severity",
+                  "value": "Warning"
+                }
+              ]
+            },
+            "description": "**Developer:** Zeinab Harb\n\n**Caller:** Security Administrator. **Expected:** HTTP 200."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('developer is Zeinab Harb', () => pm.expect(body.developer).to.eql('Zeinab Harb'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Zeinab Harb - Search Logs - by service (partial: threat)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auditor_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/logs/search?service=threat",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "logs",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "service",
+                  "value": "threat"
+                }
+              ]
+            },
+            "description": "**Developer:** Zeinab Harb\n\n**Caller:** Auditor. **Expected:** HTTP 200."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('developer is Zeinab Harb', () => pm.expect(body.developer).to.eql('Zeinab Harb'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Zeinab Harb - Search Logs - combined (date + severity + service)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/logs/search?date={{today}}&severity=Warning&service=identity",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "logs",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "date",
+                  "value": "{{today}}"
+                },
+                {
+                  "key": "severity",
+                  "value": "Warning"
+                },
+                {
+                  "key": "service",
+                  "value": "identity"
+                }
+              ]
+            },
+            "description": "**Developer:** Zeinab Harb\n\n**Caller:** Security Administrator. **Expected:** HTTP 200."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('developer is Zeinab Harb', () => pm.expect(body.developer).to.eql('Zeinab Harb'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Zeinab Harb - Search Logs - INVALID date (400)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/logs/search?date=14-10-2026",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "logs",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "date",
+                  "value": "14-10-2026"
+                }
+              ]
+            },
+            "description": "**Developer:** Zeinab Harb\n\n**Caller:** Security Administrator. **Expected:** HTTP 400."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 400', () => pm.response.to.have.status(400));",
+                  "pm.test('developer is Zeinab Harb', () => pm.expect(body.developer).to.eql('Zeinab Harb'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Zeinab Harb - Search Logs - Regular User DENIED (403)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/logs/search?action=LOGIN",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "logs",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "action",
+                  "value": "LOGIN"
+                }
+              ]
+            },
+            "description": "**Developer:** Zeinab Harb\n\n**Caller:** Regular User. **Expected:** HTTP 403."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 403', () => pm.response.to.have.status(403));",
+                  "pm.test('developer is Zeinab Harb', () => pm.expect(body.developer).to.eql('Zeinab Harb'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Zeinab Harb - Retrieve Logs By User - Regular User (id 4)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auditor_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/logs/user/4",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "logs",
+                "user",
+                "4"
+              ]
+            },
+            "description": "**Developer:** Zeinab Harb\n\n**Caller:** Auditor. **Expected:** HTTP 200."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('developer is Zeinab Harb', () => pm.expect(body.developer).to.eql('Zeinab Harb'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Zeinab Harb - Retrieve Logs By User - Admin (id 1)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/logs/user/1",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "logs",
+                "user",
+                "1"
+              ]
+            },
+            "description": "**Developer:** Zeinab Harb\n\n**Caller:** Security Administrator. **Expected:** HTTP 200."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('developer is Zeinab Harb', () => pm.expect(body.developer).to.eql('Zeinab Harb'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Zeinab Harb - Retrieve Logs By User - user with NO logs (analyst_lina, id 3)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/logs/user/3",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "logs",
+                "user",
+                "3"
+              ]
+            },
+            "description": "**Developer:** Zeinab Harb\n\n**Caller:** Security Administrator. **Expected:** HTTP 200.\n\nanalyst_lina has not logged in or done anything, so the list is empty (200, count 0)."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('developer is Zeinab Harb', () => pm.expect(body.developer).to.eql('Zeinab Harb'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Zeinab Harb - Retrieve Logs By User - non-existing user (404)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/logs/user/99999",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "logs",
+                "user",
+                "99999"
+              ]
+            },
+            "description": "**Developer:** Zeinab Harb\n\n**Caller:** Security Administrator. **Expected:** HTTP 404."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 404', () => pm.response.to.have.status(404));",
+                  "pm.test('developer is Zeinab Harb', () => pm.expect(body.developer).to.eql('Zeinab Harb'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Zeinab Harb - Retrieve Logs By User - Analyst DENIED (403)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{analyst_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/logs/user/4",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "logs",
+                "user",
+                "4"
+              ]
+            },
+            "description": "**Developer:** Zeinab Harb\n\n**Caller:** Security Analyst. **Expected:** HTTP 403."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 403', () => pm.response.to.have.status(403));",
+                  "pm.test('developer is Zeinab Harb', () => pm.expect(body.developer).to.eql('Zeinab Harb'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Zeinab Harb - Modify Log - BLOCKED (405)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/logs/{{log_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "logs",
+                "{{log_id}}"
+              ]
+            },
+            "description": "**Developer:** Zeinab Harb\n\n**Caller:** Security Administrator. **Expected:** HTTP 405.\n\nAudit logs are append-only. The attempt is itself logged as LOG_MODIFICATION_BLOCKED.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"description\": \"tampered\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 405', () => pm.response.to.have.status(405));",
+                  "pm.test('developer is Zeinab Harb', () => pm.expect(body.developer).to.eql('Zeinab Harb'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Zeinab Harb - Delete Log - as Analyst DENIED (403)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{analyst_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/logs/{{log_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "logs",
+                "{{log_id}}"
+              ]
+            },
+            "description": "**Developer:** Zeinab Harb\n\n**Caller:** Security Analyst. **Expected:** HTTP 403."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 403', () => pm.response.to.have.status(403));",
+                  "pm.test('developer is Zeinab Harb', () => pm.expect(body.developer).to.eql('Zeinab Harb'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Zeinab Harb - Delete Log - as Auditor DENIED (403)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auditor_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/logs/{{log_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "logs",
+                "{{log_id}}"
+              ]
+            },
+            "description": "**Developer:** Zeinab Harb\n\n**Caller:** Auditor. **Expected:** HTTP 403."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 403', () => pm.response.to.have.status(403));",
+                  "pm.test('developer is Zeinab Harb', () => pm.expect(body.developer).to.eql('Zeinab Harb'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Zeinab Harb - Delete Log - Admin",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/logs/{{log_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "logs",
+                "{{log_id}}"
+              ]
+            },
+            "description": "**Developer:** Zeinab Harb\n\n**Caller:** Security Administrator. **Expected:** HTTP 200.\n\nAuthorized deletion. A LOG_DELETED record is written so the deletion stays traceable."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('developer is Zeinab Harb', () => pm.expect(body.developer).to.eql('Zeinab Harb'));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "3. Security Reports Service (Zeinab Harb)",
+      "item": [
+        {
+          "name": "Zeinab Harb - Generate Security Summary Report - Admin",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/reports/summary",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "reports",
+                "summary"
+              ]
+            },
+            "description": "**Developer:** Zeinab Harb\n\n**Caller:** Security Administrator. **Expected:** HTTP 200."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('developer is Zeinab Harb', () => pm.expect(body.developer).to.eql('Zeinab Harb'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Zeinab Harb - Generate Security Summary Report - Auditor",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auditor_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/reports/summary",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "reports",
+                "summary"
+              ]
+            },
+            "description": "**Developer:** Zeinab Harb\n\n**Caller:** Auditor. **Expected:** HTTP 200."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('developer is Zeinab Harb', () => pm.expect(body.developer).to.eql('Zeinab Harb'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Zeinab Harb - Generate Incident Report",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auditor_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/reports/incidents",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "reports",
+                "incidents"
+              ]
+            },
+            "description": "**Developer:** Zeinab Harb\n\n**Caller:** Auditor. **Expected:** HTTP 200."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('developer is Zeinab Harb', () => pm.expect(body.developer).to.eql('Zeinab Harb'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Zeinab Harb - Generate Asset Report",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auditor_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/reports/assets",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "reports",
+                "assets"
+              ]
+            },
+            "description": "**Developer:** Zeinab Harb\n\n**Caller:** Auditor. **Expected:** HTTP 200."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('developer is Zeinab Harb', () => pm.expect(body.developer).to.eql('Zeinab Harb'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Zeinab Harb - Generate Threat Report",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/reports/threats",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "reports",
+                "threats"
+              ]
+            },
+            "description": "**Developer:** Zeinab Harb\n\n**Caller:** Security Administrator. **Expected:** HTTP 200."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('developer is Zeinab Harb', () => pm.expect(body.developer).to.eql('Zeinab Harb'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Zeinab Harb - Generate Vulnerability Report",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/reports/vulnerabilities",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "reports",
+                "vulnerabilities"
+              ]
+            },
+            "description": "**Developer:** Zeinab Harb\n\n**Caller:** Security Administrator. **Expected:** HTTP 200."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('developer is Zeinab Harb', () => pm.expect(body.developer).to.eql('Zeinab Harb'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Zeinab Harb - Generate Activity Report",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auditor_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/reports/activity",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "reports",
+                "activity"
+              ]
+            },
+            "description": "**Developer:** Zeinab Harb\n\n**Caller:** Auditor. **Expected:** HTTP 200."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('developer is Zeinab Harb', () => pm.expect(body.developer).to.eql('Zeinab Harb'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Zeinab Harb - Generate Summary Report - Analyst DENIED (403)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{analyst_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/reports/summary",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "reports",
+                "summary"
+              ]
+            },
+            "description": "**Developer:** Zeinab Harb\n\n**Caller:** Security Analyst. **Expected:** HTTP 403."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 403', () => pm.response.to.have.status(403));",
+                  "pm.test('developer is Zeinab Harb', () => pm.expect(body.developer).to.eql('Zeinab Harb'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Zeinab Harb - Generate Summary Report - Regular User DENIED (403)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/reports/summary",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "reports",
+                "summary"
+              ]
+            },
+            "description": "**Developer:** Zeinab Harb\n\n**Caller:** Regular User. **Expected:** HTTP 403."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 403', () => pm.response.to.have.status(403));",
+                  "pm.test('developer is Zeinab Harb', () => pm.expect(body.developer).to.eql('Zeinab Harb'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Zeinab Harb - Generate Summary Report - NO TOKEN (401)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/reports/summary",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "reports",
+                "summary"
+              ]
+            },
+            "description": "**Developer:** Zeinab Harb\n\n**Caller:** no token. **Expected:** HTTP 401."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 401', () => pm.response.to.have.status(401));",
+                  "pm.test('developer is Zeinab Harb', () => pm.expect(body.developer).to.eql('Zeinab Harb'));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// today's date (UTC, the same clock SQLite uses for timestamps) for the log date search",
+          "pm.collectionVariables.set('today', new Date().toISOString().slice(0, 10));"
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://127.0.0.1:5050"
+    },
+    {
+      "key": "admin_token",
+      "value": ""
+    },
+    {
+      "key": "analyst_token",
+      "value": ""
+    },
+    {
+      "key": "user_token",
+      "value": ""
+    },
+    {
+      "key": "auditor_token",
+      "value": ""
+    },
+    {
+      "key": "threat_id",
+      "value": ""
+    },
+    {
+      "key": "log_id",
+      "value": ""
+    },
+    {
+      "key": "today",
+      "value": ""
+    }
+  ]
+}
