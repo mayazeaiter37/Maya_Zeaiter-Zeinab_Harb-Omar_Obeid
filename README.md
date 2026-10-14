@@ -9,7 +9,7 @@ Flask + SQLite REST backend. Every route has a `# Maya Zeaiter` comment, and eve
 ```bash
 pip install -r requirements.txt
 python seed.py --reset      # creates security_system.db with all 10 tables + sample data
-python app.py               # http://127.0.0.1:5000
+python app.py               # http://127.0.0.1:5050
 python -m unittest discover tests -v   # 12 automated API tests
 ```
 
