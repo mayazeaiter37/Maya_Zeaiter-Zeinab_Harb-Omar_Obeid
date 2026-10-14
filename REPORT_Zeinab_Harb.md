@@ -310,14 +310,16 @@ Caption format required by the spec: **"Zeinab Harb – <API title> – <what it
 ## 11. References / AI usage (Zeinab Harb)
 
 - Flask documentation (flask.palletsprojects.com), Python `ipaddress` and `re` modules, SQLite documentation (aggregate functions, `date()`), Postman documentation.
-- **AI usage:** I used Claude (Anthropic), an AI assistant.
-  - **Where:** Claude wrote the code for Services 4–6:
-    - `threats_service.py`, `logs_service.py`, `reports_service.py`;
-    - the `Threat`/`AuditLog` models and repositories;
-    - the threat validators and the developer-name change in `common.py`;
-    - the seed data for threats and vulnerabilities;
-    - the automated tests (`tests/test_services_4_6.py`);
-    - the Postman collection;
-    - the README sections and this report draft.
-  - **Purpose:** <!-- TODO (Zeinab): state why you used it, in your own words -->
-  - **What I did myself:** <!-- TODO (Zeinab): list only what you actually did, e.g. reviewed and tested the code, ran the Postman collection, took the screenshots, pushed the commits -->
+- **AI usage:** I used Claude (Anthropic), an AI assistant, as a helper while building and documenting Services 4–6. It did not do the whole task: I set up, ran, tested and verified the system myself and produced all the evidence from my own machine.
+  - **Where AI was used:**
+    - Generating the Python code for `threats_service.py`, `logs_service.py` and `reports_service.py`, the `Threat`/`AuditLog` models and repositories, the threat validators and the developer-name change in `common.py`, following the structure Maya had already built.
+    - Generating the seed data for threats and sample vulnerabilities, the automated tests (`tests/test_services_4_6.py`) and the Postman collection.
+    - Drafting the README API documentation and the text of my report sections.
+    - Guiding me step by step through running the Postman requests and DB Browser checks, and compiling my screenshots into the captioned evidence document.
+  - **Purpose:** to implement and document my three services within the sprint deadline while following the specification closely (roles, validation, error handling and evidence requirements), and to learn how a Flask REST backend is tested and verified with Postman and a database browser.
+  - **What I did myself:**
+    - Read the Sprint I specification, identified my services (4–6) and the parts of Maya's code to reuse, and wrote the task description I gave to the AI.
+    - Set up the project on my laptop (virtual environment, dependencies, database seeding), applied the changes and pushed all my commits to the team repository from my own GitHub account.
+    - Ran the automated test suite (32 tests passing) and ran every API request in Postman against my own running server, checking each status code and response.
+    - Took all the screenshots (73 figures) from my own system and checked the stored records, log entries and report numbers against the database in DB Browser for SQLite.
+    - Committed the evidence document and prepared my sections for the team report.
