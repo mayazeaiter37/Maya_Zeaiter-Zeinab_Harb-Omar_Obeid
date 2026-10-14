@@ -109,7 +109,9 @@ def normalize_threat_value(threat_type, value):
     Returns (normalized_value, error_message). Canonical forms make duplicates detectable:
     IPs are compressed ("2001:DB8::0001" -> "2001:db8::1"), domains and hashes are lowercased.
     """
-    if not isinstance(value, str) or not value.strip():
+    if not isinstance(value, str):
+        return None, "Must be a string"
+    if not value.strip():
         return None, "This field is required"
     value = value.strip()
     if threat_type == "IP Address":
