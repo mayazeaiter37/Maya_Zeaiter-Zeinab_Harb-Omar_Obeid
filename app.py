@@ -14,6 +14,7 @@ from common import STUDENT_NAME, ApiError, error_body
 from database import init_db
 from incidents_service import incidents_bp
 from logs_service import logs_bp
+from reports_service import reports_bp
 from threats_service import threats_bp
 from users_service import users_bp
 
@@ -29,6 +30,7 @@ def create_app():
     app.register_blueprint(incidents_bp)
     app.register_blueprint(threats_bp)  # Zeinab Harb
     app.register_blueprint(logs_bp)  # Zeinab Harb
+    app.register_blueprint(reports_bp)  # Zeinab Harb
 
     @app.errorhandler(ApiError)
     def handle_api_error(e):
