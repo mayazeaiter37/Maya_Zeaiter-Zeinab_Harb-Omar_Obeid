@@ -1,0 +1,2170 @@
+{
+  "info": {
+    "name": "Maya Zeaiter - Services 1-3 (Users, Assets, Incidents)",
+    "description": "Sprint I - Security Incident Detection and Response Management System.\nDeveloper: Maya Zeaiter.\n\nRun `python seed.py --reset`, start `python app.py`, then run the folders in order (Authentication first: it stores the tokens).",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "0. Authentication (Maya Zeaiter)",
+      "item": [
+        {
+          "name": "Maya Zeaiter - Login as Security Administrator",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/users/login",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "users",
+                "login"
+              ]
+            },
+            "description": "**Developer:** Maya Zeaiter\n\nSuccessful login. Stores the token in `admin_token`.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"admin_maya\",\n  \"password\": \"Admin@1234\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('login succeeded', () => pm.response.to.have.status(200));",
+                  "if (body.data && body.data.token) { pm.collectionVariables.set('admin_token', body.data.token); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Maya Zeaiter - Login as Security Analyst (Karim)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/users/login",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "users",
+                "login"
+              ]
+            },
+            "description": "**Developer:** Maya Zeaiter\n\nStores `analyst_token`.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"analyst_karim\",\n  \"password\": \"Analyst@1234\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('login succeeded', () => pm.response.to.have.status(200));",
+                  "if (body.data && body.data.token) { pm.collectionVariables.set('analyst_token', body.data.token); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Maya Zeaiter - Login as Regular User (by email)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/users/login",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "users",
+                "login"
+              ]
+            },
+            "description": "**Developer:** Maya Zeaiter\n\nLogin with the email instead of the username. Stores `user_token`.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"rami@company.com\",\n  \"password\": \"User@1234\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('login succeeded', () => pm.response.to.have.status(200));",
+                  "if (body.data && body.data.token) { pm.collectionVariables.set('user_token', body.data.token); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Maya Zeaiter - Login as Auditor",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/users/login",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "users",
+                "login"
+              ]
+            },
+            "description": "**Developer:** Maya Zeaiter\n\nStores `auditor_token`.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"auditor_sara\",\n  \"password\": \"Auditor@1234\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('login succeeded', () => pm.response.to.have.status(200));",
+                  "if (body.data && body.data.token) { pm.collectionVariables.set('auditor_token', body.data.token); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Maya Zeaiter - Login FAILED - wrong password",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/users/login",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "users",
+                "login"
+              ]
+            },
+            "description": "**Developer:** Maya Zeaiter\n\nUnsuccessful login: returns 401 and writes a LOGIN_FAILED audit log.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"admin_maya\",\n  \"password\": \"WrongPass1!\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Maya Zeaiter - Login FAILED - suspended account",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/users/login",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "users",
+                "login"
+              ]
+            },
+            "description": "**Developer:** Maya Zeaiter\n\nSuspended accounts cannot authenticate (403).",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"user_suspended\",\n  \"password\": \"User@1234\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "1. Users and Identity Management (Maya Zeaiter)",
+      "item": [
+        {
+          "name": "Maya Zeaiter - Register Regular User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/users/register",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "users",
+                "register"
+              ]
+            },
+            "description": "**Developer:** Maya Zeaiter\n\nPublic registration. Password is hashed before storage. Stores the new id in `new_user_id`.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"full_name\": \"Nour Moghrabi\",\n  \"username\": \"nour_m\",\n  \"email\": \"nour@company.com\",\n  \"password\": \"Secure@2026\",\n  \"department\": \"Marketing\",\n  \"role\": \"Regular User\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "if (body.data && body.data.user_id) { pm.collectionVariables.set('new_user_id', body.data.user_id); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Maya Zeaiter - Register DUPLICATE username",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/users/register",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "users",
+                "register"
+              ]
+            },
+            "description": "**Developer:** Maya Zeaiter\n\nSame username again -> 409 Conflict.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"full_name\": \"Nour Copy\",\n  \"username\": \"nour_m\",\n  \"email\": \"nour2@company.com\",\n  \"password\": \"Secure@2026\",\n  \"department\": \"Marketing\",\n  \"role\": \"Regular User\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Maya Zeaiter - Register INVALID input",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/users/register",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "users",
+                "register"
+              ]
+            },
+            "description": "**Developer:** Maya Zeaiter\n\nInvalid email, weak password, invalid role -> 400 with per-field errors.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"full_name\": \"Bad Input\",\n  \"username\": \"bad input!\",\n  \"email\": \"not-an-email\",\n  \"password\": \"123\",\n  \"department\": \"IT\",\n  \"role\": \"Hacker\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Maya Zeaiter - Register MISSING fields",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/users/register",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "users",
+                "register"
+              ]
+            },
+            "description": "**Developer:** Maya Zeaiter\n\nMissing required fields -> 400.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"only_username\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Maya Zeaiter - Register Analyst WITHOUT admin token",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/users/register",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "users",
+                "register"
+              ]
+            },
+            "description": "**Developer:** Maya Zeaiter\n\nPrivileged roles need an admin token -> 403.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"full_name\": \"Fake Analyst\",\n  \"username\": \"fake_analyst\",\n  \"email\": \"fake@company.com\",\n  \"password\": \"Secure@2026\",\n  \"department\": \"SOC\",\n  \"role\": \"Security Analyst\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Maya Zeaiter - Register Analyst AS ADMIN",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/users/register",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "users",
+                "register"
+              ]
+            },
+            "description": "**Developer:** Maya Zeaiter\n\nAdmin can register any role.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"full_name\": \"Hadi Saad\",\n  \"username\": \"analyst_hadi\",\n  \"email\": \"hadi@company.com\",\n  \"password\": \"Secure@2026\",\n  \"department\": \"SOC\",\n  \"role\": \"Security Analyst\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Maya Zeaiter - Update User (admin)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/users/{{new_user_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "users",
+                "{{new_user_id}}"
+              ]
+            },
+            "description": "**Developer:** Maya Zeaiter\n\nAdmin updates name/email/department (and may change role/account_status). Response shows before and after.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"full_name\": \"Nour El Moghrabi\",\n  \"email\": \"nour.m@company.com\",\n  \"department\": \"Sales\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Maya Zeaiter - Update User - change role (admin)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/users/{{new_user_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "users",
+                "{{new_user_id}}"
+              ]
+            },
+            "description": "**Developer:** Maya Zeaiter\n\nRole change; writes a ROLE_CHANGED audit log.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"role\": \"Auditor\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Maya Zeaiter - Update OWN info (regular user)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/users/4",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "users",
+                "4"
+              ]
+            },
+            "description": "**Developer:** Maya Zeaiter\n\nRegular user (id 4) updates their own department.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"department\": \"Accounting\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Maya Zeaiter - Update OTHER user (regular user) - DENIED",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/users/1",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "users",
+                "1"
+              ]
+            },
+            "description": "**Developer:** Maya Zeaiter\n\nRegular user trying to edit someone else -> 403.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"department\": \"Hacked\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Maya Zeaiter - Retrieve All Users (admin)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/users",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "users"
+              ]
+            },
+            "description": "**Developer:** Maya Zeaiter\n\nReturns count + list of users (password hashes are never returned)."
+          }
+        },
+        {
+          "name": "Maya Zeaiter - Retrieve All Users (auditor)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auditor_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/users",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "users"
+              ]
+            },
+            "description": "**Developer:** Maya Zeaiter\n\nAuditor has read-only access."
+          }
+        },
+        {
+          "name": "Maya Zeaiter - Retrieve All Users (analyst) - DENIED",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{analyst_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/users",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "users"
+              ]
+            },
+            "description": "**Developer:** Maya Zeaiter\n\nAnalysts have no user-management access -> 403."
+          }
+        },
+        {
+          "name": "Maya Zeaiter - Retrieve All Users - NO TOKEN",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/users",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "users"
+              ]
+            },
+            "description": "**Developer:** Maya Zeaiter\n\nMissing authentication -> 401."
+          }
+        },
+        {
+          "name": "Maya Zeaiter - Retrieve User By Username - existing",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/users/analyst_karim",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "users",
+                "analyst_karim"
+              ]
+            },
+            "description": "**Developer:** Maya Zeaiter\n\nExisting user -> 200."
+          }
+        },
+        {
+          "name": "Maya Zeaiter - Retrieve User By Username - non-existing",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/users/ghost_user",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "users",
+                "ghost_user"
+              ]
+            },
+            "description": "**Developer:** Maya Zeaiter\n\nUnknown username -> 404."
+          }
+        },
+        {
+          "name": "Maya Zeaiter - Retrieve OWN info (regular user)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/users/user_rami",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "users",
+                "user_rami"
+              ]
+            },
+            "description": "**Developer:** Maya Zeaiter\n\nRegular user reads their own profile."
+          }
+        },
+        {
+          "name": "Maya Zeaiter - Delete User - unauthorized (auditor)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auditor_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/users/{{new_user_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "users",
+                "{{new_user_id}}"
+              ]
+            },
+            "description": "**Developer:** Maya Zeaiter\n\nAuditor cannot delete -> 403 and UNAUTHORIZED_ACCESS log."
+          }
+        },
+        {
+          "name": "Maya Zeaiter - Delete User (admin)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/users/{{new_user_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "users",
+                "{{new_user_id}}"
+              ]
+            },
+            "description": "**Developer:** Maya Zeaiter\n\nSuccessful deletion; writes USER_DELETED log."
+          }
+        },
+        {
+          "name": "Maya Zeaiter - Delete User - not found",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/users/9999",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "users",
+                "9999"
+              ]
+            },
+            "description": "**Developer:** Maya Zeaiter\n\nUnknown id -> 404."
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Asset Management (Maya Zeaiter)",
+      "item": [
+        {
+          "name": "Maya Zeaiter - Add Asset - Server",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/assets",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "assets"
+              ]
+            },
+            "description": "**Developer:** Maya Zeaiter\n\nCreates an asset. Stores id in `asset_id`.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"asset_name\": \"Mail Server\",\n  \"asset_type\": \"Server\",\n  \"ip_address\": \"10.0.0.25\",\n  \"operating_system\": \"Ubuntu 24.04\",\n  \"department\": \"IT Security\",\n  \"owner_id\": 1,\n  \"location\": \"Data Center B\",\n  \"criticality_level\": \"High\",\n  \"status\": \"Active\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "if (body.data && body.data.asset_id) { pm.collectionVariables.set('asset_id', body.data.asset_id); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Maya Zeaiter - Add Asset - Workstation",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/assets",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "assets"
+              ]
+            },
+            "description": "**Developer:** Maya Zeaiter\n\nSecond asset with Medium criticality.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"asset_name\": \"HR Laptop 12\",\n  \"asset_type\": \"Workstation\",\n  \"ip_address\": \"10.0.4.12\",\n  \"operating_system\": \"macOS 15\",\n  \"department\": \"Human Resources\",\n  \"owner_id\": 4,\n  \"location\": \"Floor 3\",\n  \"criticality_level\": \"Medium\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Maya Zeaiter - Add Asset - Cloud (IPv6)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/assets",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "assets"
+              ]
+            },
+            "description": "**Developer:** Maya Zeaiter\n\nIPv6 addresses are also accepted.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"asset_name\": \"Analytics Cluster\",\n  \"asset_type\": \"Cloud Resource\",\n  \"ip_address\": \"2001:db8::10\",\n  \"department\": \"Data\",\n  \"owner_id\": 1,\n  \"location\": \"Azure West EU\",\n  \"criticality_level\": \"Critical\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Maya Zeaiter - Add Asset - INVALID input",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/assets",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "assets"
+              ]
+            },
+            "description": "**Developer:** Maya Zeaiter\n\nInvalid IP, type and criticality -> 400.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"asset_name\": \"Bad Asset\",\n  \"asset_type\": \"Toaster\",\n  \"ip_address\": \"300.1.1.1\",\n  \"department\": \"IT\",\n  \"owner_id\": 1,\n  \"criticality_level\": \"Extreme\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Maya Zeaiter - Add Asset - analyst DENIED",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{analyst_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/assets",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "assets"
+              ]
+            },
+            "description": "**Developer:** Maya Zeaiter\n\nOnly admins create assets -> 403.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"asset_name\": \"Rogue\",\n  \"asset_type\": \"Server\",\n  \"ip_address\": \"10.0.0.99\",\n  \"department\": \"IT\",\n  \"owner_id\": 1,\n  \"criticality_level\": \"Low\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Maya Zeaiter - Retrieve Specific Asset (before update)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/assets/{{asset_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "assets",
+                "{{asset_id}}"
+              ]
+            },
+            "description": "**Developer:** Maya Zeaiter\n\nUse as the 'before' screenshot."
+          }
+        },
+        {
+          "name": "Maya Zeaiter - Update Asset",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/assets/{{asset_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "assets",
+                "{{asset_id}}"
+              ]
+            },
+            "description": "**Developer:** Maya Zeaiter\n\nUpdates name/owner/department/criticality/status; response includes before and after.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"asset_name\": \"Mail Server (Primary)\",\n  \"criticality_level\": \"Critical\",\n  \"status\": \"Under Maintenance\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Maya Zeaiter - Retrieve All Assets (admin)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/assets",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "assets"
+              ]
+            },
+            "description": "**Developer:** Maya Zeaiter\n\nAll assets with criticality and status."
+          }
+        },
+        {
+          "name": "Maya Zeaiter - Retrieve All Assets (regular user) - DENIED",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/assets",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "assets"
+              ]
+            },
+            "description": "**Developer:** Maya Zeaiter\n\nRegular users have no asset access -> 403."
+          }
+        },
+        {
+          "name": "Maya Zeaiter - Retrieve Specific Asset (analyst)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{analyst_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/assets/1",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "assets",
+                "1"
+              ]
+            },
+            "description": "**Developer:** Maya Zeaiter\n\nIncludes owner and related incidents."
+          }
+        },
+        {
+          "name": "Maya Zeaiter - Retrieve Specific Asset - invalid id",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/assets/9999",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "assets",
+                "9999"
+              ]
+            },
+            "description": "**Developer:** Maya Zeaiter\n\n-> 404."
+          }
+        },
+        {
+          "name": "Maya Zeaiter - Search Assets - by criticality",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/assets/search?criticality=Critical",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "assets",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "criticality",
+                  "value": "Critical"
+                }
+              ]
+            },
+            "description": "**Developer:** Maya Zeaiter\n\nExact match on criticality level."
+          }
+        },
+        {
+          "name": "Maya Zeaiter - Search Assets - by type",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{analyst_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/assets/search?type=Server",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "assets",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "type",
+                  "value": "Server"
+                }
+              ]
+            },
+            "description": "**Developer:** Maya Zeaiter\n\nExact match on asset type."
+          }
+        },
+        {
+          "name": "Maya Zeaiter - Search Assets - by IP prefix",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auditor_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/assets/search?ip=10.0.0",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "assets",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "ip",
+                  "value": "10.0.0"
+                }
+              ]
+            },
+            "description": "**Developer:** Maya Zeaiter\n\nPartial match on IP address."
+          }
+        },
+        {
+          "name": "Maya Zeaiter - Search Assets - by name + department",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/assets/search?name=server&department=it",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "assets",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "name",
+                  "value": "server"
+                },
+                {
+                  "key": "department",
+                  "value": "it"
+                }
+              ]
+            },
+            "description": "**Developer:** Maya Zeaiter\n\nCombined criteria (AND), case-insensitive partial match."
+          }
+        },
+        {
+          "name": "Maya Zeaiter - Search Assets - invalid criticality",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/assets/search?criticality=Huge",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "assets",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "criticality",
+                  "value": "Huge"
+                }
+              ]
+            },
+            "description": "**Developer:** Maya Zeaiter\n\n-> 400."
+          }
+        },
+        {
+          "name": "Maya Zeaiter - Search Assets - SQL injection attempt",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/assets/search?name=' OR '1'='1",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "assets",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "name",
+                  "value": "' OR '1'='1"
+                }
+              ]
+            },
+            "description": "**Developer:** Maya Zeaiter\n\nParameterised queries: returns 0 results instead of every row."
+          }
+        },
+        {
+          "name": "Maya Zeaiter - Delete Asset - analyst DENIED",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{analyst_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/assets/{{asset_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "assets",
+                "{{asset_id}}"
+              ]
+            },
+            "description": "**Developer:** Maya Zeaiter\n\n-> 403."
+          }
+        },
+        {
+          "name": "Maya Zeaiter - Delete Asset (admin)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/assets/{{asset_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "assets",
+                "{{asset_id}}"
+              ]
+            },
+            "description": "**Developer:** Maya Zeaiter\n\nSuccessful deletion."
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Incident Management (Maya Zeaiter)",
+      "item": [
+        {
+          "name": "Maya Zeaiter - Create Incident - Critical (admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/incidents",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "incidents"
+              ]
+            },
+            "description": "**Developer:** Maya Zeaiter\n\nAdmin reports a Critical incident. Stores id in `incident_id`.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Data exfiltration from customer DB\",\n  \"description\": \"Large outbound transfer from the customer database to an unknown host at 02:00.\",\n  \"category\": \"Data Leakage\",\n  \"severity\": \"Critical\",\n  \"asset_id\": 3\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "if (body.data && body.data.incident_id) { pm.collectionVariables.set('incident_id', body.data.incident_id); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Maya Zeaiter - Create Incident - Medium (regular user)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/incidents",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "incidents"
+              ]
+            },
+            "description": "**Developer:** Maya Zeaiter\n\nRegular user reports; reporter is taken from the token.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Suspicious password reset email\",\n  \"description\": \"Received an email asking me to reset my password on an unfamiliar site.\",\n  \"category\": \"Phishing Attack\",\n  \"severity\": \"Medium\",\n  \"asset_id\": 2\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Maya Zeaiter - Create Incident - Low (regular user)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/incidents",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "incidents"
+              ]
+            },
+            "description": "**Developer:** Maya Zeaiter\n\nLow severity example.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Pop-up ads on workstation\",\n  \"description\": \"Browser shows unexpected pop-ups.\",\n  \"category\": \"Other\",\n  \"severity\": \"Low\",\n  \"asset_id\": 2\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Maya Zeaiter - Create Incident - INVALID severity",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/incidents",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "incidents"
+              ]
+            },
+            "description": "**Developer:** Maya Zeaiter\n\n-> 400.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Bad\",\n  \"description\": \"x\",\n  \"category\": \"Other\",\n  \"severity\": \"Extreme\",\n  \"asset_id\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Maya Zeaiter - Create Incident - analyst DENIED",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{analyst_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/incidents",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "incidents"
+              ]
+            },
+            "description": "**Developer:** Maya Zeaiter\n\nAnalysts cannot create incidents -> 403.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"x\",\n  \"description\": \"x\",\n  \"category\": \"Other\",\n  \"severity\": \"Low\",\n  \"asset_id\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Maya Zeaiter - Retrieve All Incidents (admin)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/incidents",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "incidents"
+              ]
+            },
+            "description": "**Developer:** Maya Zeaiter\n\nIncludes status and assigned analyst."
+          }
+        },
+        {
+          "name": "Maya Zeaiter - Retrieve All Incidents (auditor)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auditor_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/incidents",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "incidents"
+              ]
+            },
+            "description": "**Developer:** Maya Zeaiter\n\nRead-only access."
+          }
+        },
+        {
+          "name": "Maya Zeaiter - Retrieve Specific Incident",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/incidents/{{incident_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "incidents",
+                "{{incident_id}}"
+              ]
+            },
+            "description": "**Developer:** Maya Zeaiter\n\nFull incident including notes."
+          }
+        },
+        {
+          "name": "Maya Zeaiter - Retrieve Specific Incident - invalid id",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/incidents/9999",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "incidents",
+                "9999"
+              ]
+            },
+            "description": "**Developer:** Maya Zeaiter\n\n-> 404."
+          }
+        },
+        {
+          "name": "Maya Zeaiter - Retrieve Incident - analyst NOT assigned",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{analyst_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/incidents/{{incident_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "incidents",
+                "{{incident_id}}"
+              ]
+            },
+            "description": "**Developer:** Maya Zeaiter\n\nAnalysts only see incidents assigned to them -> 403 (until assigned)."
+          }
+        },
+        {
+          "name": "Maya Zeaiter - Update Status - skip steps (Open -> Closed)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/incidents/{{incident_id}}/status",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "incidents",
+                "{{incident_id}}",
+                "status"
+              ]
+            },
+            "description": "**Developer:** Maya Zeaiter\n\nInvalid transition -> 400.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"Closed\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Maya Zeaiter - Assign Incident - to non-analyst",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/incidents/{{incident_id}}/assign",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "incidents",
+                "{{incident_id}}",
+                "assign"
+              ]
+            },
+            "description": "**Developer:** Maya Zeaiter\n\nUser 4 is a Regular User -> 400.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"analyst_id\": 4\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Maya Zeaiter - Assign Incident - by analyst DENIED",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{analyst_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/incidents/{{incident_id}}/assign",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "incidents",
+                "{{incident_id}}",
+                "assign"
+              ]
+            },
+            "description": "**Developer:** Maya Zeaiter\n\n-> 403.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"analyst_id\": 2\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Maya Zeaiter - Assign Incident to Analyst",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/incidents/{{incident_id}}/assign",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "incidents",
+                "{{incident_id}}",
+                "assign"
+              ]
+            },
+            "description": "**Developer:** Maya Zeaiter\n\nAssigns to analyst_karim (id 2); logs INCIDENT_ASSIGNED and creates a notification.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"analyst_id\": 2\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Maya Zeaiter - Status 1: Open -> Under Investigation",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{analyst_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/incidents/{{incident_id}}/status",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "incidents",
+                "{{incident_id}}",
+                "status"
+              ]
+            },
+            "description": "**Developer:** Maya Zeaiter\n\n",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"Under Investigation\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Maya Zeaiter - Add Investigation Note",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{analyst_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/incidents/{{incident_id}}/notes",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "incidents",
+                "{{incident_id}}",
+                "notes"
+              ]
+            },
+            "description": "**Developer:** Maya Zeaiter\n\nNote linked to the incident and the analyst.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"note_content\": \"Firewall logs show 4.2 GB sent to 185.220.101.4 between 02:00 and 02:40.\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Maya Zeaiter - Add Investigation Note (2)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{analyst_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/incidents/{{incident_id}}/notes",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "incidents",
+                "{{incident_id}}",
+                "notes"
+              ]
+            },
+            "description": "**Developer:** Maya Zeaiter\n\n",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"note_content\": \"Disabled the compromised service account and rotated DB credentials.\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Maya Zeaiter - Status 2: Under Investigation -> Mitigated",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{analyst_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/incidents/{{incident_id}}/status",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "incidents",
+                "{{incident_id}}",
+                "status"
+              ]
+            },
+            "description": "**Developer:** Maya Zeaiter\n\n",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"Mitigated\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Maya Zeaiter - Status 3: Mitigated -> Resolved",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{analyst_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/incidents/{{incident_id}}/status",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "incidents",
+                "{{incident_id}}",
+                "status"
+              ]
+            },
+            "description": "**Developer:** Maya Zeaiter\n\nSets resolution_date.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"Resolved\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Maya Zeaiter - Status 4: Resolved -> Closed (analyst) DENIED",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{analyst_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/incidents/{{incident_id}}/status",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "incidents",
+                "{{incident_id}}",
+                "status"
+              ]
+            },
+            "description": "**Developer:** Maya Zeaiter\n\nOnly admins close incidents -> 403.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"Closed\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Maya Zeaiter - Status 4: Resolved -> Closed (admin)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/incidents/{{incident_id}}/status",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "incidents",
+                "{{incident_id}}",
+                "status"
+              ]
+            },
+            "description": "**Developer:** Maya Zeaiter\n\n",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"Closed\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Maya Zeaiter - Retrieve Incident with notes",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{analyst_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/incidents/{{incident_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "incidents",
+                "{{incident_id}}"
+              ]
+            },
+            "description": "**Developer:** Maya Zeaiter\n\nShows the final state and both notes."
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://127.0.0.1:5000"
+    },
+    {
+      "key": "admin_token",
+      "value": ""
+    },
+    {
+      "key": "analyst_token",
+      "value": ""
+    },
+    {
+      "key": "user_token",
+      "value": ""
+    },
+    {
+      "key": "auditor_token",
+      "value": ""
+    },
+    {
+      "key": "new_user_id",
+      "value": ""
+    },
+    {
+      "key": "asset_id",
+      "value": ""
+    },
+    {
+      "key": "incident_id",
+      "value": ""
+    }
+  ]
+}
