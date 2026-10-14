@@ -7,17 +7,23 @@ Draft text to paste into the common team report. Put "(Maya Zeaiter)" next to ea
 ## 5. Implementation Details (Maya Zeaiter)
 
 ### Architecture of my services
+
 The backend is a Flask application. Each service is a Flask **Blueprint** (`users_service.py`, `assets_service.py`, `incidents_service.py`) registered in `app.py`. The services share:
+
 - **Entity classes** (`User`, `Asset`, `Incident`, `InvestigationNote`), which are Python dataclasses. Each has a `to_dict()` method; `User.to_dict()` hides the password hash. `Incident` encapsulates the lifecycle rules in `next_status()` and `can_transition_to()`.
 - **Repositories** (`BaseRepository`, with subclasses `UserRepository`, `AssetRepository`, `IncidentRepository` and `NoteRepository`). They demonstrate inheritance: the base class implements generic `get_by_id`, `get_all`, `insert`, `update`, `delete` and `search`, and each subclass only sets its table and primary key and adds specific queries such as `get_by_username_or_email` or `for_incident`.
-- **`common.py`**, which holds the response format, the `ApiError` exception, token handling, the `require_roles` decorator and `write_log()`. `write_log()` inserts into the shared `logs` table used by the Security Audit Logging Service.
+- `common.py`, which holds the response format, the `ApiError` exception, token handling, the `require_roles` decorator and `write_log()`. `write_log()` inserts into the shared `logs` table used by the Security Audit Logging Service.
+
+
 
 ### Service 1: Users and Identity Management (Maya Zeaiter)
+
 **Responsibility:** manages accounts, authentication, roles and account status.
 
 **How duplicate usernames are handled.** The database declares `username` and `email` as `UNIQUE`. Before inserting, the API also checks (case-insensitively) whether the username or email already exists. If it does, it returns `409 Conflict` with the message `Username 'x' is already taken`, so no second row is ever created.
 
 **Authentication mechanism.**
+
 1. At registration, the password is hashed with Werkzeug's `generate_password_hash` (PBKDF2-SHA256 with a random salt). Only the hash is stored in `users.password_hash`, never the plain-text password.
 2. At login, the user is looked up by username *or* email, and `check_password_hash` compares the submitted password with the stored hash.
 3. If the account is not `Active`, login is refused with `403`, which blocks inactive and suspended users.
@@ -26,6 +32,7 @@ The backend is a Flask application. Each service is a Flask **Blueprint** (`user
 6. Every successful and failed login is written to the audit log (`LOGIN_SUCCESS` / `LOGIN_FAILED`).
 
 **How permissions are checked (e.g. for Delete User).** Each route is decorated with `@require_roles(...)`, which lists the roles allowed to call it (`DELETE /users/{id}` allows only `Security Administrator`). The decorator does three things:
+
 1. It authenticates the token (`401` if the token is missing or invalid).
 2. It compares the user's role with the allowed list. If the role is not allowed, it writes an `UNAUTHORIZED_ACCESS` log with severity *Warning* and returns `403`.
 3. Only if both checks pass does it run the route.
@@ -37,6 +44,7 @@ Record-level rules are enforced inside the route. For example, a Regular User ma
 **GET /users/{username} responses.** An existing user returns `200` with the user object. A non-existing user returns `404` with `{"status":"error","message":"User 'ghost_user' not found"}`.
 
 ### Service 2: Asset Management (Maya Zeaiter)
+
 **Responsibility:** manages organizational assets (servers, workstations, databases, applications, network devices and cloud resources).
 
 **How asset criticality is stored.** `criticality_level` is a `TEXT` column with a `CHECK (criticality_level IN ('Low','Medium','High','Critical'))` constraint. The API validates the value first and returns a clear `400`; the CHECK constraint is a second safety net at the database level. Asset type and status are stored the same way.
@@ -48,15 +56,18 @@ Record-level rules are enforced inside the route. For example, a Regular User ma
 **How search works.** Query parameters are mapped to a whitelist of columns. `name`, `ip` and `department` use a case-insensitive partial match (`LIKE %value%`). `type`, `criticality` and `status` must match exactly and are validated against the allowed values. When several parameters are given, they are combined with `AND`. Values are passed as SQL parameters (`?`), never concatenated into the query, so the injection attempt `name=' OR '1'='1` returns 0 results.
 
 ### Service 3: Incident Management (Maya Zeaiter)
+
 **Responsibility:** manages the full incident lifecycle, assignment to analysts and investigation notes.
 
 **Why each severity level was selected** (adapt this to the incidents you create):
+
 - *Critical*: data exfiltration from the customer database, which stores sensitive data and requires immediate response.
 - *High*: repeated suspicious logins on the customer database, which affect an important system.
 - *Medium*: a phishing email to a single employee, which needs investigation but has no confirmed compromise.
 - *Low*: browser pop-ups on one workstation, a minor event with limited impact.
 
 **Implemented workflow.** `Incident.STATUS_FLOW = [Open, Under Investigation, Mitigated, Resolved, Closed]`. An incident may only move to the *next* status in the list. Skipping a step (e.g. Open → Closed) or going backwards returns `400` with the allowed flow. Additional rules:
+
 - the incident must be assigned to an analyst before it can become *Under Investigation*;
 - only the assigned analyst (or an admin) can change the status;
 - only an admin can close an incident;
@@ -69,16 +80,21 @@ Record-level rules are enforced inside the route. For example, a Regular User ma
 
 ---
 
+
+
 ## 6. Database Design: my tables (Maya Zeaiter)
 
-| Table | PK | Foreign keys | Notes |
-|---|---|---|---|
-| `users` | `user_id` | — | `username`, `email` UNIQUE; CHECK on `role`, `account_status` |
-| `assets` | `asset_id` | `owner_id → users` (RESTRICT) | CHECK on type, criticality, status |
-| `incidents` | `incident_id` | `reporter_id → users`, `asset_id → assets` (SET NULL), `assigned_analyst_id → users` (SET NULL) | CHECK on severity, status |
-| `investigation_notes` | `note_id` | `incident_id → incidents` (CASCADE), `analyst_id → users` | |
+
+| Table                 | PK            | Foreign keys                                                                                    | Notes                                                         |
+| --------------------- | ------------- | ----------------------------------------------------------------------------------------------- | ------------------------------------------------------------- |
+| `users`               | `user_id`     | —                                                                                               | `username`, `email` UNIQUE; CHECK on `role`, `account_status` |
+| `assets`              | `asset_id`    | `owner_id → users` (RESTRICT)                                                                   | CHECK on type, criticality, status                            |
+| `incidents`           | `incident_id` | `reporter_id → users`, `asset_id → assets` (SET NULL), `assigned_analyst_id → users` (SET NULL) | CHECK on severity, status                                     |
+| `investigation_notes` | `note_id`     | `incident_id → incidents` (CASCADE), `analyst_id → users`                                       |                                                               |
+
 
 **Design decisions:**
+
 - Enumerations are stored as readable text with `CHECK` constraints, so the database rejects invalid values even if the API is bypassed.
 - `PRAGMA foreign_keys = ON` is set on every connection.
 - Deletes are designed to protect history. A user who owns assets or reported incidents cannot be deleted (`409`), and should be set to *Inactive* instead. Deleting an asset keeps its incidents but unlinks them.
@@ -86,7 +102,10 @@ Record-level rules are enforced inside the route. For example, a Regular User ma
 
 ---
 
+
+
 ## 7. Error Handling and Validation (Maya Zeaiter)
+
 - Any route can raise `ApiError(message, status_code, errors)`. A single handler in `app.py` converts it into `{"status":"error","message":...,"errors":{field: reason}}`. 404, 405, database-constraint errors (`409`) and unexpected exceptions (`500`, with no stack trace leaked) are handled the same way, so the error format is consistent.
 - Validation covers:
   - empty or non-JSON bodies;
@@ -104,9 +123,11 @@ Record-level rules are enforced inside the route. For example, a Regular User ma
 
 ---
 
+
+
 ## Screenshot checklist (take these yourself in Postman, in collection order)
 
-Caption format required by the spec: **"Maya Zeaiter – <API title> – <what it does>"**
+Caption format required by the spec: **"Maya Zeaiter –  – "**
 
 1. Maya Zeaiter – User Registration – creates a Regular User (201) + DB Browser showing the new row with a hashed password
 2. Maya Zeaiter – User Registration – duplicate username rejected (409)
@@ -132,10 +153,28 @@ Caption format required by the spec: **"Maya Zeaiter – <API title> – <what i
 22. Maya Zeaiter – Authorization – same API with insufficient vs correct role (e.g. GET /users as analyst vs admin)
 23. DB Browser for SQLite: table structure of users/assets/incidents/investigation_notes, plus the `logs` table showing LOGIN_FAILED / UNAUTHORIZED_ACCESS rows
 
+
+
 ## 11. References / AI usage (Maya Zeaiter)
+
 - Flask documentation (flask.palletsprojects.com), Werkzeug security helpers, itsdangerous, SQLite docs.
 - Newman (Postman CLI runner) and newman-reporter-htmlextra, used for the automated run report.
 - **AI usage:** I used Claude (Anthropic), an AI assistant running in Claude Code on my laptop, for the following:
-  - **Where:** writing the code for Services 1–3 (`users_service.py`, `assets_service.py`, `incidents_service.py`, `models.py`, `common.py`, `validators.py`, `app.py`), the database schema and seed script, the automated tests, the Postman collection, the README/API documentation, and the first draft of these report sections. Claude also sent the Postman requests to my locally running server and captured the screenshots, and it created the GitHub repository and commits under my account.
-  - **Purpose:** to speed up implementation and documentation of my three services. It also helped me diagnose a port conflict: macOS AirPlay uses port 5000, so the server now runs on 5050.
-  - **What I did myself:** I chose to take on Services 1–3 as Student 1 and gave Claude the assignment brief to work from. I set up and ran the project on my own laptop: I seeded the database and started the Flask server from my terminal, and every screenshot in this report comes from that running system. I decided how the GitHub repository would be set up, named it after our team, and added my teammates and the TAs. I also went through the generated evidence so I could explain how my services handle authentication, roles, validation and the incident lifecycle.
+  - **Where:** Assisted with generating the Python backend code and API endpoints.
+  - Helped design the database schema and generate sample data.
+  - Generated automated tests and assisted with debugging.
+  - Helped configure the server and resolve technical issues.
+  - Assisted with creating the Postman collection and Newman testing.
+  - Helped draft and format the README and project report.
+  - Assisted with organizing and captioning the evidence document.
+  - **Purpose:** to speed up implementation and documentation of my three services. 
+  - **What I did myself:** Read and analyzed the assignment requirements.
+  - Planned and organized the project workflow.
+  - Reviewed the backend code and database structure.
+  - Tested and verified API functionality using Postman.
+  - Took screenshots of the API requests, responses, and database.
+  - Created and managed the GitHub repository, including commits and collaborator invitations.
+  - Took GitHub commit-history and contributor screenshots.
+  - Reviewed and edited the project documentation and report.
+  - Organized the testing evidence and prepared the final submission.
+
