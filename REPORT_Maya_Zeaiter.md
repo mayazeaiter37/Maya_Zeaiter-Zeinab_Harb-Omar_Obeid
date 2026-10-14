@@ -134,4 +134,8 @@ Caption format required by the spec: **"Maya Zeaiter – <API title> – <what i
 
 ## 11. References / AI usage (Maya Zeaiter)
 - Flask documentation (flask.palletsprojects.com), Werkzeug security helpers, itsdangerous, SQLite docs.
-- AI usage: *(state honestly how you used Claude, e.g. "used Claude (Anthropic) to help scaffold the Flask services, validation helpers and the Postman collection; I reviewed, ran and tested all code myself")*.
+- Newman (Postman CLI runner) and newman-reporter-htmlextra, used for the automated run report.
+- **AI usage:** I used Claude (Anthropic), an AI assistant running in Claude Code on my laptop, for the following:
+  - **Where:** writing the code for Services 1–3 (`users_service.py`, `assets_service.py`, `incidents_service.py`, `models.py`, `common.py`, `validators.py`, `app.py`), the database schema and seed script, the automated tests, the Postman collection, the README/API documentation, and the first draft of these report sections. Claude also sent the Postman requests to my locally running server and captured the screenshots, and it created the GitHub repository and commits under my account.
+  - **Purpose:** to speed up implementation and documentation of my three services. It also helped me diagnose a port conflict: macOS AirPlay uses port 5000, so the server now runs on 5050.
+  - **What I did myself:** *(fill in honestly before submitting, e.g. which parts you read through, tested, changed or can explain)*.
