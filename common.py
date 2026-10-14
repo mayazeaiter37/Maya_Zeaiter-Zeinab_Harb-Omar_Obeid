@@ -28,15 +28,29 @@ class ApiError(Exception):
         self.errors = errors
 
 
+def current_developer():
+    """Name shown in the "developer" field. Each blueprint sets g.developer in a before_request hook
+    (Zeinab Harb); routes that don't set it keep Maya's default."""
+    return g.get("developer", STUDENT_NAME)
+
+
+def set_developer(blueprint, name):
+    """Make every response of this blueprint (success and error) show `name` as developer. (Zeinab Harb)"""
+
+    @blueprint.before_request
+    def _set_developer():
+        g.developer = name
+
+
 def success(message, data=None, status_code=200):
-    body = {"status": "success", "message": message, "developer": STUDENT_NAME}
+    body = {"status": "success", "message": message, "developer": current_developer()}
     if data is not None:
         body["data"] = data
     return jsonify(body), status_code
 
 
 def error_body(message, errors=None):
-    body = {"status": "error", "message": message, "developer": STUDENT_NAME}
+    body = {"status": "error", "message": message, "developer": current_developer()}
     if errors:
         body["errors"] = errors
     return body
