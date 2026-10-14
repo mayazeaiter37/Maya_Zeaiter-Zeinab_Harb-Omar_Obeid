@@ -198,3 +198,92 @@ class IncidentRepository(BaseRepository):
         if incident and with_notes:
             incident.notes = self.notes.for_incident(record_id)
         return incident
+
+
+# ---------------------------------------------------------------- Services 4-5 entities (Zeinab Harb)
+@dataclass
+class Threat:
+    """A threat-intelligence indicator (malicious IP, domain, file hash, ...). (Zeinab Harb)"""
+
+    TYPES = ["IP Address", "Domain", "File Hash", "Malware Signature", "Other"]
+    SEVERITIES = ["Low", "Medium", "High", "Critical"]
+
+    threat_id: int
+    threat_type: str
+    threat_value: str
+    description: str
+    severity_level: str
+    source: str
+    date_added: str
+
+    def to_dict(self):
+        return asdict(self)
+
+
+@dataclass
+class AuditLog:
+    """One security audit record. Logs are append-only: there is no update method. (Zeinab Harb)"""
+
+    SEVERITIES = ["Information", "Warning", "Error", "Critical"]
+
+    log_id: int
+    user_id: Optional[int]
+    action_performed: str
+    description: str
+    timestamp: str
+    severity_level: str
+    related_service: str
+
+    def to_dict(self):
+        return asdict(self)
+
+
+# ---------------------------------------------------------------- Services 4-5 repositories (Zeinab Harb)
+class ThreatRepository(BaseRepository):
+    table, pk, entity = "threats", "threat_id", Threat
+
+    def find_duplicate(self, threat_type, threat_value):
+        """Existing indicator with the same type and value (case-insensitive), or None."""
+        rows = self._query("SELECT * FROM threats WHERE threat_type = ? AND threat_value = ? COLLATE NOCASE",
+                           (threat_type, threat_value))
+        return self._to_entity(rows[0]) if rows else None
+
+
+class LogRepository(BaseRepository):
+    table, pk, entity = "logs", "log_id", AuditLog
+
+    def update(self, record_id, values):
+        raise NotImplementedError("Audit logs are append-only and cannot be modified")
+
+    def get_all(self):
+        """Newest first, which is how auditors read activity."""
+        return [self._to_entity(r) for r in self._query("SELECT * FROM logs ORDER BY log_id DESC")]
+
+    def for_user(self, user_id):
+        rows = self._query("SELECT * FROM logs WHERE user_id = ? ORDER BY log_id DESC", (user_id,))
+        return [self._to_entity(r) for r in rows]
+
+    def filter(self, user_id=None, username=None, date=None, action=None, severity=None, service=None):
+        """Combine any of the filters with AND. Every value is a bound parameter, never part of the SQL text."""
+        clauses, params = [], []
+        if user_id is not None:
+            clauses.append("user_id = ?")
+            params.append(user_id)
+        if username is not None:
+            clauses.append("user_id IN (SELECT user_id FROM users WHERE username = ? COLLATE NOCASE)")
+            params.append(username)
+        if date is not None:
+            clauses.append("date(timestamp) = ?")
+            params.append(date)
+        if action is not None:
+            clauses.append("action_performed LIKE ? COLLATE NOCASE")
+            params.append(f"%{action}%")
+        if severity is not None:
+            clauses.append("severity_level = ?")
+            params.append(severity)
+        if service is not None:
+            clauses.append("related_service LIKE ? COLLATE NOCASE")
+            params.append(f"%{service}%")
+        where = " WHERE " + " AND ".join(clauses) if clauses else ""
+        rows = self._query(f"SELECT * FROM logs{where} ORDER BY log_id DESC", tuple(params))
+        return [self._to_entity(r) for r in rows]
