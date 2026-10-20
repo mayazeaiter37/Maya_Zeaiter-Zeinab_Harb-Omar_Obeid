@@ -1,9 +1,12 @@
 # Security Incident Detection and Response Management System — Backend
 
+**Course:** EECE 435L (Software Tools Lab) — Final Project, Sprint 1
+
 **Services 1–3 (Users and Identity, Asset Management, Incident Management): Maya Zeaiter**
 **Services 4–6 (Threat Intelligence, Security Audit Logging, Security Reports): Zeinab Harb**
+**Services 7–9 (Vulnerability Management, Notification and Alert Management, Security Playbook and Response Automation): Omar Obeid**
 
-Flask + SQLite REST backend. Every route has a comment with its developer's full name (`# Maya Zeaiter` / `(Zeinab Harb)`), and every JSON response has a `"developer"` field naming the student who built that service.
+Flask + SQLite REST backend. Every route has a comment with its developer's full name (`# Maya Zeaiter` / `(Zeinab Harb)` / `(Omar Obeid)`), and every JSON response has a `"developer"` field naming the student who built that service.
 
 ## Run it
 
@@ -11,10 +14,10 @@ Flask + SQLite REST backend. Every route has a comment with its developer's full
 pip install -r requirements.txt
 python seed.py --reset      # creates security_system.db with all 10 tables + sample data
 python app.py               # http://127.0.0.1:5050
-python -m unittest discover tests -v   # 32 automated API tests (12 Services 1-3, 20 Services 4-6)
+python -m unittest discover tests -v   # 49 automated API tests (12 Services 1-3, 20 Services 4-6, 17 Services 7-9)
 ```
 
-Import `postman/Maya_Zeaiter_Services_1-3.postman_collection.json` and `postman/Zeinab_Harb_Services_4-6.postman_collection.json` into Postman. In each collection, run the **Authentication** folder first, because it saves the four role tokens into collection variables.
+Import `postman/Maya_Zeaiter_Services_1-3.postman_collection.json`, `postman/Zeinab_Harb_Services_4-6.postman_collection.json` and `postman/Omar_Obeid_Services_7-9.postman_collection.json` into Postman. In each collection, run the **Authentication** folder first, because it saves the four role tokens into collection variables.
 
 Seeded test accounts (see `seed.py`): `admin_maya`, `analyst_karim`, `analyst_lina`, `user_rami`, `auditor_sara`, `user_suspended`.
 
@@ -27,13 +30,16 @@ Seeded test accounts (see `seed.py`): `admin_maya`, `analyst_karim`, `analyst_li
 | `database.py` | SQLite connection (foreign keys ON) and `init_db()` |
 | `common.py` | Response format, `ApiError`, token auth, `require_roles` RBAC decorator, audit log writer |
 | `validators.py` | Input validation (required fields, email, password, IP, enums, unknown fields) |
-| `models.py` | Entity classes (`User`, `Asset`, `Incident`, `InvestigationNote`, `Threat`, `AuditLog`) and repositories (`BaseRepository` and subclasses) |
+| `models.py` | Entity classes (`User`, `Asset`, `Incident`, `InvestigationNote`, `Threat`, `AuditLog`, `Vulnerability`, `Notification`, `Playbook`, `ResponseAction`) and repositories (`BaseRepository` and subclasses) |
 | `users_service.py` | Service 1 |
 | `assets_service.py` | Service 2 |
 | `incidents_service.py` | Service 3 |
 | `threats_service.py` | Service 4 (Zeinab Harb) |
 | `logs_service.py` | Service 5 (Zeinab Harb) |
 | `reports_service.py` | Service 6 (Zeinab Harb) |
+| `vulnerabilities_service.py` | Service 7 (Omar Obeid) |
+| `notifications_service.py` | Service 8 (Omar Obeid) |
+| `playbooks_service.py` | Service 9 (Omar Obeid) |
 
 ## Response format
 
@@ -47,9 +53,9 @@ Seeded test accounts (see `seed.py`): `admin_maya`, `analyst_karim`, `analyst_li
 | 400 | Validation error, invalid status transition, empty or non-JSON body |
 | 401 | Missing, invalid or expired token; wrong username/password |
 | 403 | Role not allowed, not the caller's own record, inactive or suspended account |
-| 404 | User, asset, incident, threat or log not found |
+| 404 | User, asset, incident, threat, log, vulnerability, notification, playbook or action not found |
 | 405 | Attempt to modify an audit log (logs are append-only) |
-| 409 | Duplicate username/email, duplicate threat indicator (same type + value), or a record that is still referenced (e.g. deleting a user who reported incidents) |
+| 409 | Duplicate username/email, duplicate threat indicator (same type + value), duplicate CVE on the same asset, duplicate playbook name or step number, a playbook step started before the earlier steps are completed, or a record that is still referenced (e.g. deleting a user who reported incidents) |
 
 Protected routes need the header `Authorization: Bearer <token>` (the token comes from `POST /users/login`).
 
@@ -241,3 +247,134 @@ All report routes: **Admin and Auditor only** (Analyst and Regular User → `403
 
 "Open" incidents and vulnerabilities are those whose status is not Resolved or Closed.
 
+---
+
+## Service 7: Vulnerability Management (Omar Obeid)
+
+| API | Method & endpoint | Roles |
+|---|---|---|
+| Create Vulnerability Record | `POST /vulnerabilities` | Admin |
+| Retrieve All Vulnerabilities | `GET /vulnerabilities` | Admin, Analyst, Auditor |
+| Retrieve Specific Vulnerability | `GET /vulnerabilities/{id}` | Admin, Analyst, Auditor |
+| Update Vulnerability Status | `PUT /vulnerabilities/{id}` | Admin, Analyst |
+| Search Vulnerabilities | `GET /vulnerabilities/search` | Admin, Analyst, Auditor |
+| Delete Vulnerability | `DELETE /vulnerabilities/{id}` | Admin |
+
+Regular Users get `403` on every vulnerability route.
+
+**POST /vulnerabilities**
+```json
+{ "title": "Apache HTTP Server path traversal", "description": "Path traversal and RCE in Apache 2.4.49",
+  "cve_identifier": "CVE-2021-41773", "cvss_score": 7.5, "severity_level": "High",
+  "affected_asset_id": 1, "discovery_source": "Nessus scan" }
+```
+All seven fields are required. The rules are:
+
+- `cve_identifier` must match `CVE-YYYY-NNNN` (4 or more digits, year 1999 to next year). It is stored upper-case.
+- `cvss_score` is a number from 0.0 to 10.0 with one decimal place.
+- `severity_level` must agree with the CVSS v3 rating: 0–3.9 Low, 4.0–6.9 Medium, 7.0–8.9 High, 9.0–10.0 Critical.
+- `affected_asset_id` must be an existing asset.
+- The same CVE cannot be recorded twice on the same asset.
+
+New records start as `Open`. A High or Critical vulnerability also sends a **Vulnerability Alert** notification to the asset owner.
+→ `201` (record with an `affected_asset` summary) · `400` · `403` · `404` (asset not found) · `409` (duplicate CVE on that asset).
+
+**GET /vulnerabilities** → `200 { count, vulnerabilities: [...] }`. **GET /vulnerabilities/{id}** → `200` · `404`.
+
+**PUT /vulnerabilities/{id}** takes any subset of `description`, `severity_level`, `status`, `cvss_score` and `resolution_date`:
+```json
+{ "status": "Under Investigation" }
+{ "cvss_score": 6.5, "severity_level": "Medium", "description": "RCE blocked; path traversal remains" }
+```
+- Status moves one step at a time: `Open → Under Investigation → In Progress → Resolved → Closed`.
+- Severity and CVSS must still agree after the update.
+- Moving to `Resolved` sets `resolution_date` automatically. A `resolution_date` (`YYYY-MM-DD` or `YYYY-MM-DD HH:MM:SS`, not in the future, not before creation) may only be sent when the record is Resolved or Closed.
+- `title`, `cve_identifier`, `affected_asset_id` and `discovery_source` are read-only (`400`).
+
+→ `200 { before, after }` · `400` · `403` · `404`.
+
+**GET /vulnerabilities/search** query params: `cve` (partial, case-insensitive), `severity`, `status` (exact, validated) and `asset` (asset id). Parameters combine with AND, e.g. `/vulnerabilities/search?severity=High&status=Open&asset=1`. At least one is required; unknown parameters → `400`.
+
+**DELETE /vulnerabilities/{id}** → `200 { deleted_vulnerability_id, deleted_vulnerability }` · `403` · `404`.
+
+Creates, updates and deletes write `VULNERABILITY_CREATED` / `VULNERABILITY_UPDATED` / `VULNERABILITY_STATUS_CHANGED` / `VULNERABILITY_DELETED` audit logs. Zeinab's `GET /reports/vulnerabilities` reads the same table.
+
+## Service 8: Notification and Alert Management (Omar Obeid)
+
+| API | Method & endpoint | Roles |
+|---|---|---|
+| Create Notification | `POST /notifications` | Admin, Analyst |
+| Retrieve User Notifications | `GET /notifications/user/{user_id}` | Admin, Auditor (any user); Analyst, Regular User (own) |
+| Retrieve Specific Notification | `GET /notifications/{id}` | Admin, Auditor (any); Analyst, Regular User (own) |
+| Mark Notification as Read | `PUT /notifications/{id}/read` | Recipient; Admin |
+| Search Notifications | `GET /notifications/search` | Admin, Auditor (all); Analyst, Regular User (own inbox only) |
+| Delete Notification | `DELETE /notifications/{id}` | Admin |
+
+**POST /notifications**
+```json
+{ "user_id": 4, "title": "Suspicious login to your account", "message": "New login from 203.0.113.45",
+  "notification_type": "Security Alert", "severity_level": "High" }
+```
+`notification_type` ∈ Incident Assignment, Security Alert, System Notification, Threat Alert, Vulnerability Alert · `severity_level` ∈ Low, Medium, High, Critical · `user_id` must be an existing, Active user. New notifications are `Unread` with no `read_date`.
+→ `201` · `400` · `403` · `404` (recipient not found).
+
+Notifications are also created automatically by other services:
+
+- Incident assigned (Service 3) → Incident Assignment.
+- High or Critical vulnerability recorded (Service 7) → Vulnerability Alert to the asset owner.
+- Response action assigned (Service 9) → System Notification.
+
+**GET /notifications/user/{user_id}** → `200 { user, count, unread_count, notifications }`, newest first. A user with no notifications returns `count: 0` and an empty list. An unknown user → `404`; another user's inbox (not Admin/Auditor) → `403`.
+
+**GET /notifications/{id}** → `200` · `403` (not yours) · `404`.
+
+**PUT /notifications/{id}/read** (no body) sets `status = "Read"` and `read_date` to the current UTC time. Calling it again returns `200` and keeps the first `read_date`. → `200` · `403` · `404`.
+
+**GET /notifications/search** query params: `user` (id or username), `type`, `severity`, `status` (exact, validated). They combine with AND, e.g. `/notifications/search?user=4&status=Unread`. Analysts and Regular Users only search their own notifications; asking for another user → `403`.
+
+**DELETE /notifications/{id}** → `200` · `403` · `404`.
+
+## Service 9: Security Playbook and Response Automation (Omar Obeid)
+
+| API | Method & endpoint | Roles |
+|---|---|---|
+| Create Playbook | `POST /playbooks` | Admin |
+| Retrieve All Playbooks | `GET /playbooks` | Admin, Analyst, Auditor |
+| Retrieve Specific Playbook | `GET /playbooks/{id}` | Admin, Analyst, Auditor |
+| Add Response Action | `POST /playbooks/{id}/actions` | Admin, Analyst |
+| Update Response Action Status | `PUT /actions/{id}/status` | Admin; Analyst (own or unassigned actions) |
+| Delete Playbook | `DELETE /playbooks/{id}` | Admin |
+
+**POST /playbooks**
+```json
+{ "playbook_name": "DDoS Mitigation", "description": "Keep public services online during a traffic flood",
+  "incident_category": "Denial of Service", "severity_level": "High" }
+```
+`incident_category` uses the incident categories of Service 3 · `severity_level` ∈ Low, Medium, High, Critical · names are unique (case-insensitive). `created_by` is the logged-in administrator.
+→ `201` · `400` · `403` · `409` (duplicate name).
+
+**GET /playbooks** → `200 { count, playbooks: [...] }`, each with `progress { total_steps, completed_steps, percent_complete }`.
+**GET /playbooks/{id}** → `200` playbook with its `actions` ordered by `step_number`, plus `progress` · `404`.
+
+**POST /playbooks/{id}/actions**
+```json
+{ "action_description": "Contact the ISP to enable upstream scrubbing", "step_number": 2, "assigned_user_id": 3 }
+```
+`step_number` is a positive integer, unique within the playbook (`409` otherwise). Steps may be added in any order. `assigned_user_id` is optional and must be an Active Administrator or Analyst, who is then notified. New actions are `Pending`.
+→ `201 { action, playbook }` · `400` · `403` · `404` · `409`.
+
+**PUT /actions/{id}/status**
+```json
+{ "status": "In Progress", "assigned_user_id": 2 }
+{ "status": "Completed", "completion_date": "2026-10-20" }
+```
+- Status moves one step at a time: `Pending → In Progress → Completed`.
+- A step can only start once every earlier step of the playbook is Completed (`409`).
+- An unassigned step is assigned to whoever starts it. Analysts can only update their own or unassigned steps, and can only assign themselves.
+- `Completed` sets `completion_date` (now, or the given date, which cannot be in the future).
+
+→ `200 { before, after, playbook_progress }` · `400` · `403` · `404` · `409`.
+
+**DELETE /playbooks/{id}** → `200 { deleted_playbook_id, deleted_actions, deleted_playbook }`. Its response actions are removed by `ON DELETE CASCADE`. → `403` · `404`.
+
+Playbook and action changes write `PLAYBOOK_CREATED`, `PLAYBOOK_DELETED`, `RESPONSE_ACTION_ADDED` and `RESPONSE_ACTION_STATUS_CHANGED` audit logs. Notification changes write `NOTIFICATION_CREATED`, `NOTIFICATION_READ` and `NOTIFICATION_DELETED`. Permission violations in all three services are logged as `UNAUTHORIZED_ACCESS`.
