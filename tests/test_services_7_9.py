@@ -133,7 +133,7 @@ NOTE = {"user_id": 4, "title": "Suspicious login", "message": "New login to your
 
 class NotificationTests(ApiTestCase):
     def test_create(self):
-        r = self.call("post", "/notifications", "analyst_karim", json=NOTE)
+        r = self.call("post", "/notifications", "admin_maya", json=NOTE)
         self.assertEqual(r.status_code, 201, r.get_json())
         data = r.get_json()["data"]
         self.assertEqual((data["status"], data["read_date"], data["username"]), ("Unread", None, "user_rami"))
@@ -144,6 +144,7 @@ class NotificationTests(ApiTestCase):
                 self.assertEqual(self.call("post", "/notifications", "admin_maya",
                                            json=dict(NOTE, **change)).status_code, code)
         self.assertEqual(self.call("post", "/notifications", "user_rami", json=NOTE).status_code, 403)
+        self.assertEqual(self.call("post", "/notifications", "analyst_karim", json=NOTE).status_code, 403)
         self.assertEqual(self.call("post", "/notifications", "auditor_sara", json=NOTE).status_code, 403)
 
     def test_user_notifications(self):
@@ -180,9 +181,11 @@ class NotificationTests(ApiTestCase):
                                              "'System Notification' AND status = 'Unread'"))
         r = self.call("get", "/notifications/search?user=analyst_karim", "auditor_sara")
         self.assertTrue(all(n["user_id"] == 2 for n in r.get_json()["data"]["notifications"]))
-        r = self.call("get", "/notifications/search?severity=Low", "user_rami")  # own inbox only
-        self.assertTrue(all(n["user_id"] == 4 for n in r.get_json()["data"]["notifications"]))
-        self.assertEqual(self.call("get", "/notifications/search?user=2", "user_rami").status_code, 403)
+        r = self.call("get", "/notifications/search?status=Unread", "analyst_karim")  # own inbox only
+        self.assertTrue(r.get_json()["data"]["notifications"])
+        self.assertTrue(all(n["user_id"] == 2 for n in r.get_json()["data"]["notifications"]))
+        self.assertEqual(self.call("get", "/notifications/search?user=4", "analyst_karim").status_code, 403)
+        self.assertEqual(self.call("get", "/notifications/search?status=Unread", "user_rami").status_code, 403)
         for bad in ("", "?status=Seen", "?type=Spam", "?colour=red"):
             self.assertEqual(self.call("get", f"/notifications/search{bad}", "admin_maya").status_code, 400)
 

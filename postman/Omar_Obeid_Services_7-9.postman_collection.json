@@ -1951,7 +1951,7 @@
           ]
         },
         {
-          "name": "Omar Obeid - Create Notification - Threat Alert to analyst (by analyst)",
+          "name": "Omar Obeid - Create Notification - Threat Alert to analyst",
           "request": {
             "method": "POST",
             "header": [
@@ -1961,7 +1961,7 @@
               },
               {
                 "key": "Authorization",
-                "value": "Bearer {{analyst_token}}"
+                "value": "Bearer {{admin_token}}"
               }
             ],
             "url": {
@@ -1973,7 +1973,7 @@
                 "notifications"
               ]
             },
-            "description": "**Developer:** Omar Obeid\n\n**Caller:** Security Analyst (analyst_karim). **Expected:** HTTP 201.\n\nAnalysts can raise alerts too.",
+            "description": "**Developer:** Omar Obeid\n\n**Caller:** Security Administrator. **Expected:** HTTP 201.\n\nCritical threat alert for analyst_karim.",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"user_id\": 2,\n  \"title\": \"IOC match on web server\",\n  \"message\": \"Traffic to 198.51.100.23 (ransomware C2) seen from the main web server\",\n  \"notification_type\": \"Threat Alert\",\n  \"severity_level\": \"Critical\"\n}",
@@ -2261,7 +2261,55 @@
                 "notifications"
               ]
             },
-            "description": "**Developer:** Omar Obeid\n\n**Caller:** Regular User. **Expected:** HTTP 403.\n\nOnly Administrators and Analysts send notifications.",
+            "description": "**Developer:** Omar Obeid\n\n**Caller:** Regular User. **Expected:** HTTP 403.\n\nOnly the Security Administrator creates notifications.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"user_id\": 4,\n  \"title\": \"Suspicious login to your account\",\n  \"message\": \"A new login from 203.0.113.45 was detected. Change your password if this was not you.\",\n  \"notification_type\": \"Security Alert\",\n  \"severity_level\": \"High\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 403', () => pm.response.to.have.status(403));",
+                  "pm.test('developer is Omar Obeid', () => pm.expect(body.developer).to.eql('Omar Obeid'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Omar Obeid - Create Notification - analyst DENIED",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{analyst_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/notifications",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "notifications"
+              ]
+            },
+            "description": "**Developer:** Omar Obeid\n\n**Caller:** Security Analyst (analyst_karim). **Expected:** HTTP 403.\n\nOnly the Security Administrator creates notifications.",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"user_id\": 4,\n  \"title\": \"Suspicious login to your account\",\n  \"message\": \"A new login from 203.0.113.45 was detected. Change your password if this was not you.\",\n  \"notification_type\": \"Security Alert\",\n  \"severity_level\": \"High\"\n}",
@@ -2912,7 +2960,91 @@
           ]
         },
         {
-          "name": "Omar Obeid - Search Notifications - regular user searches own inbox",
+          "name": "Omar Obeid - Search Notifications - analyst searches own inbox",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{analyst_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/notifications/search?status=Unread",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "notifications",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "Unread"
+                }
+              ]
+            },
+            "description": "**Developer:** Omar Obeid\n\n**Caller:** Security Analyst (analyst_karim). **Expected:** HTTP 200.\n\nResults are limited to the analyst's own notifications."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('developer is Omar Obeid', () => pm.expect(body.developer).to.eql('Omar Obeid'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Omar Obeid - Search Notifications - analyst searches another user DENIED",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{analyst_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/notifications/search?user=4",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "notifications",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "user",
+                  "value": "4"
+                }
+              ]
+            },
+            "description": "**Developer:** Omar Obeid\n\n**Caller:** Security Analyst (analyst_karim). **Expected:** HTTP 403.\n\nAnalysts cannot search other users' notifications."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 403', () => pm.response.to.have.status(403));",
+                  "pm.test('developer is Omar Obeid', () => pm.expect(body.developer).to.eql('Omar Obeid'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Omar Obeid - Search Notifications - regular user DENIED",
           "request": {
             "method": "GET",
             "header": [
@@ -2937,49 +3069,7 @@
                 }
               ]
             },
-            "description": "**Developer:** Omar Obeid\n\n**Caller:** Regular User. **Expected:** HTTP 200.\n\nResults are limited to the caller's notifications."
-          },
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "const body = pm.response.json();",
-                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
-                  "pm.test('developer is Omar Obeid', () => pm.expect(body.developer).to.eql('Omar Obeid'));"
-                ]
-              }
-            }
-          ]
-        },
-        {
-          "name": "Omar Obeid - Search Notifications - regular user searches another user DENIED",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{user_token}}"
-              }
-            ],
-            "url": {
-              "raw": "{{base_url}}/notifications/search?user=2",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "notifications",
-                "search"
-              ],
-              "query": [
-                {
-                  "key": "user",
-                  "value": "2"
-                }
-              ]
-            },
-            "description": "**Developer:** Omar Obeid\n\n**Caller:** Regular User. **Expected:** HTTP 403.\n\nUsers cannot search other inboxes."
+            "description": "**Developer:** Omar Obeid\n\n**Caller:** Regular User. **Expected:** HTTP 403.\n\nRegular users have no search access."
           },
           "event": [
             {

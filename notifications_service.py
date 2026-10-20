@@ -47,7 +47,7 @@ def _present(notification):
 
 # ---------------------------------------------------------------- 1. Create Notification (Omar Obeid)
 @notifications_bp.route("/notifications", methods=["POST"])
-@require_roles(ADMIN, ANALYST, service=SERVICE)
+@require_roles(ADMIN, service=SERVICE)
 def create_notification():
     data = get_json_body()
     reject_unknown_fields(data, CREATE_FIELDS)
@@ -97,7 +97,7 @@ def get_user_notifications(user_id):
 
 # ---------------------------------------------------------------- 5. Search Notifications (Omar Obeid)
 @notifications_bp.route("/notifications/search", methods=["GET"])
-@require_roles(ADMIN, ANALYST, AUDITOR, REGULAR, service=SERVICE)
+@require_roles(ADMIN, ANALYST, AUDITOR, service=SERVICE)
 def search_notifications():
     allowed = ["user", "type", "severity", "status"]
     unknown = sorted(set(request.args) - set(allowed))
@@ -119,9 +119,9 @@ def search_notifications():
     user_id, username = (int(user), None) if user.isdigit() else (None, user or None)
     caller = g.current_user
     if caller["role"] not in SEE_ALL_ROLES:
-        # other roles search inside their own inbox only
+        # analysts search inside their own inbox only
         if user and user_id != caller["user_id"] and (username or "").lower() != caller["username"].lower():
-            deny("You can only search your own notifications", SERVICE)
+            deny("Security Analysts can only search their own notifications", SERVICE)
         user_id, username = caller["user_id"], None
 
     results = [_present(n) for n in notifications.filter(user_id, username, request.args.get("type"),
