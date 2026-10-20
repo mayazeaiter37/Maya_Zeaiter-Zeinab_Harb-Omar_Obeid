@@ -322,4 +322,15 @@ Caption format required by the spec: **"Omar Obeid – <API title> – <what it 
 ## 11. References / AI usage (Omar Obeid)
 
 - Flask documentation (flask.palletsprojects.com), SQLite documentation (foreign keys, `ON DELETE CASCADE`, `CHECK` constraints), the CVE ID syntax (cve.org), FIRST CVSS v3.1 specification (qualitative severity rating scale), Postman documentation.
-- **AI usage:**
+- **AI usage:** I used Claude (Anthropic), an AI assistant, as a research and support tool while working on Services 7–9. It was used as a guide and a reviewer, not as a replacement for my own work.
+  - **Where AI was used:**
+    - Researching terminal commands needed during the project, such as creating and activating the Python virtual environment, installing the dependencies from `requirements.txt`, seeding the database, starting the Flask server, running the automated tests, and Git commands for branching, committing and pushing to the team repository.
+    - Getting a step-by-step guide on how to approach the work: how to organise my three services within the existing project structure, the order in which to build and test them, and how to verify each endpoint with Postman and DB Browser for SQLite.
+    - Checking my code for mistakes: when an endpoint returned an unexpected status code, a test failed, or a query did not behave as expected, I asked the AI to review the relevant code and explain what was wrong, then I applied and tested the fix myself.
+  - **Purpose:** to work more efficiently with tools I was less familiar with (the terminal, Git, Flask and SQLite), to follow a clear workflow that matches the Sprint I specification, and to find and understand errors in my code faster.
+  - **What I did myself:**
+    - Read the Sprint I specification and identified the requirements for Vulnerability Management, Notification and Alert Management, and Security Playbook and Response Automation.
+    - Ran all the terminal commands on my own machine, set up the environment and ran the server and the test suite.
+    - Tested every API request in Postman against my running server and checked the stored records in DB Browser for SQLite.
+    - Reviewed each suggestion from the AI before using it, and verified that every fix actually worked by re-running the tests and requests.
+    - Took all the screenshots for my evidence and pushed my commits to the team repository from my own GitHub account.
