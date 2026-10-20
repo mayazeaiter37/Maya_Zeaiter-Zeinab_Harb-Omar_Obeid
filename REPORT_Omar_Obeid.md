@@ -322,14 +322,4 @@ Caption format required by the spec: **"Omar Obeid – <API title> – <what it 
 ## 11. References / AI usage (Omar Obeid)
 
 - Flask documentation (flask.palletsprojects.com), SQLite documentation (foreign keys, `ON DELETE CASCADE`, `CHECK` constraints), the CVE ID syntax (cve.org), FIRST CVSS v3.1 specification (qualitative severity rating scale), Postman documentation.
-- **AI usage:** I used Claude (Anthropic), an AI assistant, as a helper while building and documenting Services 7–9.
-  - **Where AI was used:**
-    - Generating the Python code for `vulnerabilities_service.py`, `notifications_service.py` and `playbooks_service.py`, the four models and repositories in `models.py`, and the CVE/CVSS/date validators, following the structure Maya and Zeinab had already built.
-    - Generating the seed data for notifications and playbooks, the automated tests (`tests/test_services_7_9.py`) and the Postman collection.
-    - Drafting the README API documentation and the text of my report sections.
-  - **Purpose:** to implement and document my three services within the sprint deadline while following the specification closely (roles, validation, status transitions, error handling and evidence requirements), and to learn how a Flask REST backend is structured, tested and verified.
-  - **What I did myself:** *(complete and adjust this list before submitting so it matches exactly what you did)*
-    - Read the Sprint 1 specification, identified my services (7–9) and the parts of the team's code to reuse, and wrote the task description I gave to the AI.
-    - Reviewed the generated code and pushed all my commits to the team repository from my own GitHub account (OhoBEiD).
-    - Ran the automated test suite (49 tests passing) and every request of my Postman collection against my own running server.
-    - Took all screenshots from my own system and checked the stored records against the database in DB Browser for SQLite.
+- **AI usage:**
