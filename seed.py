@@ -1,5 +1,6 @@
 # Creates the database and inserts sample data
 # Services 1-3 data: Maya Zeaiter. Threats (Service 4) and sample vulnerabilities for the reports (Service 6): Zeinab Harb
+# Notifications (Service 8), playbooks and response actions (Service 9): Omar Obeid
 #
 # Test accounts (local development only):
 #   admin_maya     / Admin@1234    Security Administrator
@@ -72,6 +73,48 @@ VULNERABILITIES = [
 ]
 
 
+# ---------------------------------------------------------------- Omar Obeid
+# Notifications: every type and severity, both Read and Unread. analyst_lina (id 3) has none on purpose,
+# to show the empty result of GET /notifications/user/3.
+# (user id, title, message, type, severity, status, read_date)
+NOTIFICATIONS = [
+    (2, "New incident assigned", "Incident #1 'Ransomware on web server' has been assigned to you",
+     "Incident Assignment", "Critical", "Unread", None),
+    (2, "Critical vulnerability on HR Portal", "CVE-2021-44228 'Log4Shell' (CVSS 10.0) needs patching",
+     "Vulnerability Alert", "Critical", "Read", "2026-10-01 09:15:00"),
+    (1, "Brute-force source detected", "203.0.113.45 matched a threat indicator on the main web server",
+     "Threat Alert", "High", "Unread", None),
+    (1, "Nightly backup completed", "The S3 backup job finished without errors", "System Notification",
+     "Low", "Read", "2026-10-02 07:00:00"),
+    (4, "Phishing campaign in progress", "Do not open invoice emails from unknown senders this week",
+     "Security Alert", "Medium", "Unread", None),
+    (4, "Password expiry", "Your password expires in 7 days", "System Notification", "Low", "Unread", None),
+    (5, "Quarterly audit window open", "Audit logs for Q3 are ready for review", "System Notification",
+     "Medium", "Unread", None),
+]
+
+# Playbooks: (name, description, incident category, severity, created by)
+PLAYBOOKS = [
+    ("Ransomware Containment", "Isolate, eradicate and recover from a ransomware infection",
+     "Malware Infection", "Critical", 1),
+    ("Phishing Response", "Handle a reported phishing email and protect affected accounts",
+     "Phishing Attack", "Medium", 1),
+    ("Compromised Account Recovery", "Lock and restore a user account that was taken over",
+     "Account Compromise", "High", 1),
+]
+
+# Response actions: (playbook id, description, step number, status, assigned user id, completion date)
+RESPONSE_ACTIONS = [
+    (1, "Disconnect the infected host from the network", 1, "Completed", 2, "2026-10-05 10:00:00"),
+    (1, "Identify the ransomware family from the ransom note and file hashes", 2, "In Progress", 2, None),
+    (1, "Restore encrypted files from the last clean backup", 3, "Pending", None, None),
+    (1, "Reset credentials used on the infected host", 4, "Pending", None, None),
+    (2, "Block the sender domain on the mail gateway", 1, "Pending", None, None),
+    (2, "Search all mailboxes for the same message and delete it", 2, "Pending", None, None),
+    (2, "Reset the password of any user who clicked the link", 3, "Pending", None, None),
+]
+
+
 def seed():
     if "--reset" in sys.argv and os.path.exists(DB_PATH):
         os.remove(DB_PATH)
@@ -97,9 +140,19 @@ def seed():
         conn.executemany(  # Zeinab Harb
             "INSERT INTO vulnerabilities (title, description, cve_identifier, cvss_score, severity_level, "
             "affected_asset_id, discovery_source, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", VULNERABILITIES)
+        conn.executemany(  # Omar Obeid
+            "INSERT INTO notifications (user_id, title, message, notification_type, severity_level, status, "
+            "read_date) VALUES (?, ?, ?, ?, ?, ?, ?)", NOTIFICATIONS)
+        conn.executemany(  # Omar Obeid
+            "INSERT INTO playbooks (playbook_name, description, incident_category, severity_level, created_by) "
+            "VALUES (?, ?, ?, ?, ?)", PLAYBOOKS)
+        conn.executemany(  # Omar Obeid
+            "INSERT INTO response_actions (playbook_id, action_description, step_number, status, "
+            "assigned_user_id, completion_date) VALUES (?, ?, ?, ?, ?, ?)", RESPONSE_ACTIONS)
         conn.commit()
         print(f"Seeded {len(USERS)} users, {len(ASSETS)} assets, {len(INCIDENTS)} incidents, "
-              f"{len(THREATS)} threats, {len(VULNERABILITIES)} vulnerabilities into {DB_PATH}")
+              f"{len(THREATS)} threats, {len(VULNERABILITIES)} vulnerabilities, {len(NOTIFICATIONS)} notifications, "
+              f"{len(PLAYBOOKS)} playbooks, {len(RESPONSE_ACTIONS)} response actions into {DB_PATH}")
     finally:
         conn.close()
 
