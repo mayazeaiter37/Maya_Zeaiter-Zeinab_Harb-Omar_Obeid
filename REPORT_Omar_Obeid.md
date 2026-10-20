@@ -56,6 +56,12 @@ My three services follow the same structure as Services 1–6. Each one is a Fla
 
 New records start as `Open`. When the severity is High or Critical, the asset's owner automatically receives a **Vulnerability Alert** notification.
 
+**How vulnerability severity is stored.** Severity is stored twice, in two forms:
+- `cvss_score` is a `REAL` column with `CHECK (cvss_score BETWEEN 0 AND 10)`. It holds the numeric score, e.g. 7.5.
+- `severity_level` is a `TEXT` column with `CHECK IN ('Low','Medium','High','Critical')`. It holds the qualitative rating.
+
+The API guarantees that the two always agree (on create and on every update), so reports can group by `severity_level` while still showing the exact score. Zeinab's vulnerability report uses both: counts by `severity_level` and `AVG(cvss_score)`.
+
 **Vulnerability records created for evidence (Postman):**
 
 | CVE | Asset | CVSS | Severity | Why |
@@ -66,7 +72,7 @@ New records start as `Open`. When the severity is High or Critical, the asset's 
 
 The seed data adds six more (Log4Shell, regreSSHion, etc.) covering every status.
 
-**GET /vulnerabilities and GET /vulnerabilities/{id}.** The response is `{status, message, developer, data: {count, vulnerabilities: [...]}}`. Each record includes an `affected_asset` summary (name, IP, criticality) taken from the Asset Management table, so the reader does not need a second request. An unknown id gives `404 "Vulnerability with id 99999 not found"`.
+**Returned response format (GET /vulnerabilities) and GET /vulnerabilities/{id}.** The response is `{status, message, developer, data: {count, vulnerabilities: [...]}}`. Each record includes an `affected_asset` summary (name, IP, criticality) taken from the Asset Management table, so the reader does not need a second request. An unknown id gives `404 "Vulnerability with id 99999 not found"`.
 
 **How status transitions are enforced (PUT /vulnerabilities/{id}).**
 - The lifecycle is `Open → Under Investigation → In Progress → Resolved → Closed`. A status change must be exactly the next step (`can_transition_to()`). Skipping (Open → Resolved) or going back (Closed → Open) returns `400` with the allowed flow and the next permitted status.
@@ -98,7 +104,7 @@ The seed data adds six more (Log4Shell, regreSSHion, etc.) covering every status
 
 | Source | Type | Recipient |
 |---|---|---|
-| `POST /notifications` (Admin or Analyst) | any of the five types | the given user |
+| `POST /notifications` (Security Administrator) | any of the five types | the given user |
 | Incident assigned (Service 3, Maya) | Incident Assignment | the assigned analyst |
 | High/Critical vulnerability recorded (Service 7) | Vulnerability Alert | the owner of the affected asset |
 | Response action assigned (Service 9) | System Notification | the assigned responder |
@@ -118,10 +124,10 @@ Every notification starts as `Unread` with `read_date = NULL`, and `creation_dat
 
 **How a notification is marked as read.** `PUT /notifications/{id}/read` (no body):
 - Only the recipient or an Administrator may mark it. An Analyst marking someone else's gets `403`, and an Auditor, who is read-only, gets `403`.
-- It sets `status = 'Read'` and `read_date = datetime('now')` in one `UPDATE`.
+- It sets `status = 'Read'` and `read_date = datetime('now')` in one `UPDATE`. For the evidence, show the row in DB Browser before (`Unread`, `read_date` NULL) and after (`Read`, with a timestamp).
 - If the notification is already read, it returns `200` with "already read on …" and **keeps the original `read_date`**, so the first time the user saw the alert is preserved.
 
-**Privacy rule.** Users see and read only their own notifications unless they are an Administrator or Auditor. This applies to `GET /notifications/{id}` and the user list. In search, Analysts and Regular Users are restricted to their own inbox automatically, and asking for another user returns `403`.
+**Privacy rule.** Users see and read only their own notifications unless they are an Administrator or Auditor. This applies to `GET /notifications/{id}` and the user list. In search, Analysts are restricted to their own inbox automatically and asking for another user returns `403`. Regular Users have no search access, as in the spec's authorization table.
 
 **Search.** `user` (numeric id or username), `type`, `severity` and `status`, combined with `AND` by `NotificationRepository.filter()`. All values are validated and bound as parameters.
 
@@ -134,6 +140,8 @@ Every notification starts as `Unread` with `read_date = NULL`, and `creation_dat
 **APIs:** `POST /playbooks`, `GET /playbooks`, `GET /playbooks/{id}`, `POST /playbooks/{id}/actions`, `PUT /actions/{id}/status`, `DELETE /playbooks/{id}`.
 
 **Database interaction:** `playbooks` (with `created_by` → `users`) and `response_actions` (with `playbook_id` → `playbooks ON DELETE CASCADE` and `assigned_user_id` → `users`). One playbook has many actions, and `UNIQUE (playbook_id, step_number)` applies.
+
+**How playbooks are organized.** A playbook is the procedure for one incident category at one severity level (e.g. "Ransomware Containment" for Malware Infection / Critical). It contains an ordered list of response actions, each identified by a unique `step_number`. Reading a playbook returns the procedure header, its steps in order, and its progress.
 
 **Creating a playbook.**
 - All four fields are required.
@@ -259,8 +267,9 @@ My services raise Maya's `ApiError`, so every error has the format `{"status":"e
 | POST /vulnerabilities, DELETE /vulnerabilities/{id} | ✔ | ✘ | ✘ | ✘ |
 | GET /vulnerabilities, GET /vulnerabilities/{id}, GET /vulnerabilities/search | ✔ | ✔ | ✔ | ✘ |
 | PUT /vulnerabilities/{id} | ✔ | ✔ | ✘ | ✘ |
-| POST /notifications | ✔ | ✔ | ✘ | ✘ |
-| GET /notifications/user/{id}, GET /notifications/{id}, GET /notifications/search | ✔ (all) | own | ✔ (all) | own |
+| POST /notifications | ✔ | ✘ | ✘ | ✘ |
+| GET /notifications/user/{id}, GET /notifications/{id} | ✔ (all) | own | ✔ (all) | own |
+| GET /notifications/search | ✔ (all) | own | ✔ (all) | ✘ |
 | PUT /notifications/{id}/read | ✔ | own | ✘ | own |
 | DELETE /notifications/{id} | ✔ | ✘ | ✘ | ✘ |
 | POST /playbooks, DELETE /playbooks/{id} | ✔ | ✘ | ✘ | ✘ |
@@ -291,11 +300,11 @@ Caption format required by the spec: **"Omar Obeid – <API title> – <what it 
 9. Omar Obeid – Update Vulnerability Status – CVSS/severity/description update with before/after; read-only CVE rejected; auditor denied
 10. Omar Obeid – Delete Vulnerability – analyst denied (403), admin success (200), then 404, plus the `VULNERABILITY_DELETED` row in `logs`
 11. Omar Obeid – Create Notification – Security Alert, Threat Alert, System Notification (201), plus DB rows in `notifications`
-12. Omar Obeid – Create Notification – invalid type / missing fields (400), unknown user (404), suspended user (400), regular user denied (403)
+12. Omar Obeid – Create Notification – invalid type / missing fields (400), unknown user (404), suspended user (400), regular user and analyst denied (403)
 13. Omar Obeid – Retrieve User Notifications – own inbox, admin viewing another user, **empty result for analyst_lina (count 0)**, other user's inbox denied (403), unknown user (404)
 14. Omar Obeid – Retrieve Specific Notification – own (200), someone else's (403), not found (404)
 15. Omar Obeid – Mark Notification as Read – not the recipient (403), recipient (200, status Read + read_date), already read (200), plus DB row before and after
-16. Omar Obeid – Search Notifications – by user, type, severity, status, combined, own inbox only for regular user, invalid status
+16. Omar Obeid – Search Notifications – by user, type, severity, status, combined, analyst limited to own inbox, analyst searching another user (403), regular user denied (403), invalid status
 17. Omar Obeid – Delete Notification – regular user denied (403), admin (200), then 404
 18. Omar Obeid – Create Playbook – DDoS Mitigation and Data Leak Response (201); duplicate name (409); invalid / missing (400); analyst denied (403)
 19. Omar Obeid – Retrieve All Playbooks – admin, analyst, auditor (200); regular user denied (403)

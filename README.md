@@ -303,11 +303,11 @@ Creates, updates and deletes write `VULNERABILITY_CREATED` / `VULNERABILITY_UPDA
 
 | API | Method & endpoint | Roles |
 |---|---|---|
-| Create Notification | `POST /notifications` | Admin, Analyst |
+| Create Notification | `POST /notifications` | Admin |
 | Retrieve User Notifications | `GET /notifications/user/{user_id}` | Admin, Auditor (any user); Analyst, Regular User (own) |
 | Retrieve Specific Notification | `GET /notifications/{id}` | Admin, Auditor (any); Analyst, Regular User (own) |
 | Mark Notification as Read | `PUT /notifications/{id}/read` | Recipient; Admin |
-| Search Notifications | `GET /notifications/search` | Admin, Auditor (all); Analyst, Regular User (own inbox only) |
+| Search Notifications | `GET /notifications/search` | Admin, Auditor (all); Analyst (own inbox only) |
 | Delete Notification | `DELETE /notifications/{id}` | Admin |
 
 **POST /notifications**
@@ -330,7 +330,7 @@ Notifications are also created automatically by other services:
 
 **PUT /notifications/{id}/read** (no body) sets `status = "Read"` and `read_date` to the current UTC time. Calling it again returns `200` and keeps the first `read_date`. → `200` · `403` · `404`.
 
-**GET /notifications/search** query params: `user` (id or username), `type`, `severity`, `status` (exact, validated). They combine with AND, e.g. `/notifications/search?user=4&status=Unread`. Analysts and Regular Users only search their own notifications; asking for another user → `403`.
+**GET /notifications/search** query params: `user` (id or username), `type`, `severity`, `status` (exact, validated). They combine with AND, e.g. `/notifications/search?user=4&status=Unread`. Analysts only search their own notifications (asking for another user → `403`); Regular Users have no search access (`403`).
 
 **DELETE /notifications/{id}** → `200` · `403` · `404`.
 
