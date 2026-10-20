@@ -1,0 +1,4806 @@
+{
+  "info": {
+    "name": "Omar Obeid - Services 7-9 (Vulnerabilities, Notifications, Playbooks)",
+    "description": "EECE 435L Final Project, Sprint I - Security Incident Detection and Response Management System.\nDeveloper: Omar Obeid.\n\nRun `python seed.py --reset`, start `python app.py`, then run the folders in order (Authentication first: it stores the tokens).",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// today's date (UTC) for resolution / completion dates",
+          "pm.collectionVariables.set('today', new Date().toISOString().slice(0, 10));"
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://127.0.0.1:5050"
+    },
+    {
+      "key": "admin_token",
+      "value": ""
+    },
+    {
+      "key": "analyst_token",
+      "value": ""
+    },
+    {
+      "key": "lina_token",
+      "value": ""
+    },
+    {
+      "key": "user_token",
+      "value": ""
+    },
+    {
+      "key": "auditor_token",
+      "value": ""
+    },
+    {
+      "key": "vulnerability_id",
+      "value": ""
+    },
+    {
+      "key": "vulnerability_to_delete",
+      "value": ""
+    },
+    {
+      "key": "notification_id",
+      "value": ""
+    },
+    {
+      "key": "playbook_id",
+      "value": ""
+    },
+    {
+      "key": "playbook_to_delete",
+      "value": ""
+    },
+    {
+      "key": "action_1",
+      "value": ""
+    },
+    {
+      "key": "action_2",
+      "value": ""
+    },
+    {
+      "key": "action_3",
+      "value": ""
+    },
+    {
+      "key": "today",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "0. Authentication (Omar Obeid)",
+      "item": [
+        {
+          "name": "Omar Obeid - Login as Security Administrator",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/users/login",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "users",
+                "login"
+              ]
+            },
+            "description": "**Developer:** Omar Obeid\n\n**Caller:** no token. **Expected:** HTTP 200.\n\nStores the token in `admin_token`.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"admin_maya\",\n  \"password\": \"Admin@1234\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "if (body.data) { pm.collectionVariables.set('admin_token', body.data.token); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Omar Obeid - Login as Security Analyst (karim)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/users/login",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "users",
+                "login"
+              ]
+            },
+            "description": "**Developer:** Omar Obeid\n\n**Caller:** no token. **Expected:** HTTP 200.\n\nStores the token in `analyst_token`.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"analyst_karim\",\n  \"password\": \"Analyst@1234\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "if (body.data) { pm.collectionVariables.set('analyst_token', body.data.token); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Omar Obeid - Login as Security Analyst (lina)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/users/login",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "users",
+                "login"
+              ]
+            },
+            "description": "**Developer:** Omar Obeid\n\n**Caller:** no token. **Expected:** HTTP 200.\n\nStores the token in `lina_token`.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"analyst_lina\",\n  \"password\": \"Analyst@1234\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "if (body.data) { pm.collectionVariables.set('lina_token', body.data.token); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Omar Obeid - Login as Regular User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/users/login",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "users",
+                "login"
+              ]
+            },
+            "description": "**Developer:** Omar Obeid\n\n**Caller:** no token. **Expected:** HTTP 200.\n\nStores the token in `user_token`.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"user_rami\",\n  \"password\": \"User@1234\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "if (body.data) { pm.collectionVariables.set('user_token', body.data.token); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Omar Obeid - Login as Auditor",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/users/login",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "users",
+                "login"
+              ]
+            },
+            "description": "**Developer:** Omar Obeid\n\n**Caller:** no token. **Expected:** HTTP 200.\n\nStores the token in `auditor_token`.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"auditor_sara\",\n  \"password\": \"Auditor@1234\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "if (body.data) { pm.collectionVariables.set('auditor_token', body.data.token); }"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "1. Vulnerability Management Service (Omar Obeid)",
+      "item": [
+        {
+          "name": "Omar Obeid - Create Vulnerability - High (CVSS 7.5)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/vulnerabilities",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "vulnerabilities"
+              ]
+            },
+            "description": "**Developer:** Omar Obeid\n\n**Caller:** Security Administrator. **Expected:** HTTP 201.\n\nRecords CVE-2021-41773 on asset 1. A High/Critical vulnerability also sends a Vulnerability Alert notification to the asset owner. Stores `vulnerability_id`.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Apache HTTP Server path traversal\",\n  \"description\": \"Path traversal and remote code execution in Apache HTTP Server 2.4.49\",\n  \"cve_identifier\": \"CVE-2021-41773\",\n  \"cvss_score\": 7.5,\n  \"severity_level\": \"High\",\n  \"affected_asset_id\": 1,\n  \"discovery_source\": \"Nessus scan\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 201', () => pm.response.to.have.status(201));",
+                  "pm.test('developer is Omar Obeid', () => pm.expect(body.developer).to.eql('Omar Obeid'));",
+                  "if (body.data) { pm.collectionVariables.set('vulnerability_id', body.data.vulnerability_id); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Omar Obeid - Create Vulnerability - Critical (CVSS 9.8)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/vulnerabilities",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "vulnerabilities"
+              ]
+            },
+            "description": "**Developer:** Omar Obeid\n\n**Caller:** Security Administrator. **Expected:** HTTP 201.\n\nSpring4Shell on the customer database.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Spring4Shell\",\n  \"description\": \"Spring Framework RCE through data binding\",\n  \"cve_identifier\": \"CVE-2022-22965\",\n  \"cvss_score\": 9.8,\n  \"severity_level\": \"Critical\",\n  \"affected_asset_id\": 3,\n  \"discovery_source\": \"Dependency audit\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 201', () => pm.response.to.have.status(201));",
+                  "pm.test('developer is Omar Obeid', () => pm.expect(body.developer).to.eql('Omar Obeid'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Omar Obeid - Create Vulnerability - Medium (CVSS 5.9)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/vulnerabilities",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "vulnerabilities"
+              ]
+            },
+            "description": "**Developer:** Omar Obeid\n\n**Caller:** Security Administrator. **Expected:** HTTP 201.\n\nTerrapin SSH attack on the finance workstation. Stores `vulnerability_to_delete`.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Terrapin SSH prefix truncation\",\n  \"description\": \"SSH handshake prefix truncation attack\",\n  \"cve_identifier\": \"cve-2023-48795\",\n  \"cvss_score\": 5.9,\n  \"severity_level\": \"Medium\",\n  \"affected_asset_id\": 2,\n  \"discovery_source\": \"Endpoint agent\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 201', () => pm.response.to.have.status(201));",
+                  "pm.test('developer is Omar Obeid', () => pm.expect(body.developer).to.eql('Omar Obeid'));",
+                  "pm.test('CVE stored upper-case', () => pm.expect(body.data.cve_identifier).to.eql('CVE-2023-48795'));",
+                  "if (body.data) { pm.collectionVariables.set('vulnerability_to_delete', body.data.vulnerability_id); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Omar Obeid - Create Vulnerability - DUPLICATE CVE on same asset",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/vulnerabilities",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "vulnerabilities"
+              ]
+            },
+            "description": "**Developer:** Omar Obeid\n\n**Caller:** Security Administrator. **Expected:** HTTP 409.\n\nSame CVE on the same asset is rejected.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Apache HTTP Server path traversal\",\n  \"description\": \"Path traversal and remote code execution in Apache HTTP Server 2.4.49\",\n  \"cve_identifier\": \"CVE-2021-41773\",\n  \"cvss_score\": 7.5,\n  \"severity_level\": \"High\",\n  \"affected_asset_id\": 1,\n  \"discovery_source\": \"Nessus scan\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 409', () => pm.response.to.have.status(409));",
+                  "pm.test('developer is Omar Obeid', () => pm.expect(body.developer).to.eql('Omar Obeid'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Omar Obeid - Create Vulnerability - INVALID CVE format",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/vulnerabilities",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "vulnerabilities"
+              ]
+            },
+            "description": "**Developer:** Omar Obeid\n\n**Caller:** Security Administrator. **Expected:** HTTP 400.\n\nCVE must look like CVE-YYYY-NNNN (4+ digits).",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Apache HTTP Server path traversal\",\n  \"description\": \"Path traversal and remote code execution in Apache HTTP Server 2.4.49\",\n  \"cve_identifier\": \"CVE-21-77\",\n  \"cvss_score\": 7.5,\n  \"severity_level\": \"High\",\n  \"affected_asset_id\": 1,\n  \"discovery_source\": \"Nessus scan\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 400', () => pm.response.to.have.status(400));",
+                  "pm.test('developer is Omar Obeid', () => pm.expect(body.developer).to.eql('Omar Obeid'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Omar Obeid - Create Vulnerability - CVSS out of range",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/vulnerabilities",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "vulnerabilities"
+              ]
+            },
+            "description": "**Developer:** Omar Obeid\n\n**Caller:** Security Administrator. **Expected:** HTTP 400.\n\nCVSS must be between 0.0 and 10.0.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Apache HTTP Server path traversal\",\n  \"description\": \"Path traversal and remote code execution in Apache HTTP Server 2.4.49\",\n  \"cve_identifier\": \"CVE-2024-3094\",\n  \"cvss_score\": 11,\n  \"severity_level\": \"High\",\n  \"affected_asset_id\": 1,\n  \"discovery_source\": \"Nessus scan\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 400', () => pm.response.to.have.status(400));",
+                  "pm.test('developer is Omar Obeid', () => pm.expect(body.developer).to.eql('Omar Obeid'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Omar Obeid - Create Vulnerability - severity does not match CVSS",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/vulnerabilities",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "vulnerabilities"
+              ]
+            },
+            "description": "**Developer:** Omar Obeid\n\n**Caller:** Security Administrator. **Expected:** HTTP 400.\n\nCVSS 9.8 must be rated Critical, not Low.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Apache HTTP Server path traversal\",\n  \"description\": \"Path traversal and remote code execution in Apache HTTP Server 2.4.49\",\n  \"cve_identifier\": \"CVE-2024-3094\",\n  \"cvss_score\": 9.8,\n  \"severity_level\": \"Low\",\n  \"affected_asset_id\": 1,\n  \"discovery_source\": \"Nessus scan\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 400', () => pm.response.to.have.status(400));",
+                  "pm.test('developer is Omar Obeid', () => pm.expect(body.developer).to.eql('Omar Obeid'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Omar Obeid - Create Vulnerability - MISSING fields",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/vulnerabilities",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "vulnerabilities"
+              ]
+            },
+            "description": "**Developer:** Omar Obeid\n\n**Caller:** Security Administrator. **Expected:** HTTP 400.\n\nEvery field is required.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Only a title\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 400', () => pm.response.to.have.status(400));",
+                  "pm.test('developer is Omar Obeid', () => pm.expect(body.developer).to.eql('Omar Obeid'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Omar Obeid - Create Vulnerability - asset NOT FOUND",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/vulnerabilities",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "vulnerabilities"
+              ]
+            },
+            "description": "**Developer:** Omar Obeid\n\n**Caller:** Security Administrator. **Expected:** HTTP 404.\n\nThe affected asset must exist.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Apache HTTP Server path traversal\",\n  \"description\": \"Path traversal and remote code execution in Apache HTTP Server 2.4.49\",\n  \"cve_identifier\": \"CVE-2024-3094\",\n  \"cvss_score\": 10.0,\n  \"severity_level\": \"Critical\",\n  \"affected_asset_id\": 999,\n  \"discovery_source\": \"Nessus scan\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 404', () => pm.response.to.have.status(404));",
+                  "pm.test('developer is Omar Obeid', () => pm.expect(body.developer).to.eql('Omar Obeid'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Omar Obeid - Create Vulnerability - analyst DENIED",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{analyst_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/vulnerabilities",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "vulnerabilities"
+              ]
+            },
+            "description": "**Developer:** Omar Obeid\n\n**Caller:** Security Analyst (analyst_karim). **Expected:** HTTP 403.\n\nOnly the Security Administrator can create records.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Apache HTTP Server path traversal\",\n  \"description\": \"Path traversal and remote code execution in Apache HTTP Server 2.4.49\",\n  \"cve_identifier\": \"CVE-2024-3094\",\n  \"cvss_score\": 7.5,\n  \"severity_level\": \"High\",\n  \"affected_asset_id\": 1,\n  \"discovery_source\": \"Nessus scan\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 403', () => pm.response.to.have.status(403));",
+                  "pm.test('developer is Omar Obeid', () => pm.expect(body.developer).to.eql('Omar Obeid'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Omar Obeid - Retrieve All Vulnerabilities - admin",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/vulnerabilities",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "vulnerabilities"
+              ]
+            },
+            "description": "**Developer:** Omar Obeid\n\n**Caller:** Security Administrator. **Expected:** HTTP 200.\n\nLists every record."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('developer is Omar Obeid', () => pm.expect(body.developer).to.eql('Omar Obeid'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Omar Obeid - Retrieve All Vulnerabilities - analyst",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{analyst_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/vulnerabilities",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "vulnerabilities"
+              ]
+            },
+            "description": "**Developer:** Omar Obeid\n\n**Caller:** Security Analyst (analyst_karim). **Expected:** HTTP 200.\n\nAnalysts can list."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('developer is Omar Obeid', () => pm.expect(body.developer).to.eql('Omar Obeid'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Omar Obeid - Retrieve All Vulnerabilities - auditor",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auditor_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/vulnerabilities",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "vulnerabilities"
+              ]
+            },
+            "description": "**Developer:** Omar Obeid\n\n**Caller:** Auditor. **Expected:** HTTP 200.\n\nAuditors can list."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('developer is Omar Obeid', () => pm.expect(body.developer).to.eql('Omar Obeid'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Omar Obeid - Retrieve All Vulnerabilities - regular user DENIED",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/vulnerabilities",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "vulnerabilities"
+              ]
+            },
+            "description": "**Developer:** Omar Obeid\n\n**Caller:** Regular User. **Expected:** HTTP 403.\n\nRegular users have no access to vulnerabilities."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 403', () => pm.response.to.have.status(403));",
+                  "pm.test('developer is Omar Obeid', () => pm.expect(body.developer).to.eql('Omar Obeid'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Omar Obeid - Retrieve Specific Vulnerability - existing",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{analyst_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/vulnerabilities/{{vulnerability_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "vulnerabilities",
+                "{{vulnerability_id}}"
+              ]
+            },
+            "description": "**Developer:** Omar Obeid\n\n**Caller:** Security Analyst (analyst_karim). **Expected:** HTTP 200.\n\nIncludes the affected asset's name, IP and criticality."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('developer is Omar Obeid', () => pm.expect(body.developer).to.eql('Omar Obeid'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Omar Obeid - Retrieve Specific Vulnerability - NOT FOUND",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auditor_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/vulnerabilities/99999",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "vulnerabilities",
+                "99999"
+              ]
+            },
+            "description": "**Developer:** Omar Obeid\n\n**Caller:** Auditor. **Expected:** HTTP 404.\n\nUnknown id."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 404', () => pm.response.to.have.status(404));",
+                  "pm.test('developer is Omar Obeid', () => pm.expect(body.developer).to.eql('Omar Obeid'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Omar Obeid - Search Vulnerabilities - by CVE",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{analyst_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/vulnerabilities/search?cve=2021-44228",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "vulnerabilities",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "cve",
+                  "value": "2021-44228"
+                }
+              ]
+            },
+            "description": "**Developer:** Omar Obeid\n\n**Caller:** Security Analyst (analyst_karim). **Expected:** HTTP 200.\n\nPartial, case-insensitive CVE match (Log4Shell)."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('developer is Omar Obeid', () => pm.expect(body.developer).to.eql('Omar Obeid'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Omar Obeid - Search Vulnerabilities - by severity",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auditor_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/vulnerabilities/search?severity=Critical",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "vulnerabilities",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "severity",
+                  "value": "Critical"
+                }
+              ]
+            },
+            "description": "**Developer:** Omar Obeid\n\n**Caller:** Auditor. **Expected:** HTTP 200.\n\nExact severity."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('developer is Omar Obeid', () => pm.expect(body.developer).to.eql('Omar Obeid'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Omar Obeid - Search Vulnerabilities - by asset",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/vulnerabilities/search?asset=1",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "vulnerabilities",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "asset",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "**Developer:** Omar Obeid\n\n**Caller:** Security Administrator. **Expected:** HTTP 200.\n\nAll vulnerabilities on asset 1."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('developer is Omar Obeid', () => pm.expect(body.developer).to.eql('Omar Obeid'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Omar Obeid - Search Vulnerabilities - by status",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/vulnerabilities/search?status=Open",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "vulnerabilities",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "Open"
+                }
+              ]
+            },
+            "description": "**Developer:** Omar Obeid\n\n**Caller:** Security Administrator. **Expected:** HTTP 200.\n\nExact status."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('developer is Omar Obeid', () => pm.expect(body.developer).to.eql('Omar Obeid'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Omar Obeid - Search Vulnerabilities - combined",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/vulnerabilities/search?severity=High&status=Open&asset=1",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "vulnerabilities",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "severity",
+                  "value": "High"
+                },
+                {
+                  "key": "status",
+                  "value": "Open"
+                },
+                {
+                  "key": "asset",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "**Developer:** Omar Obeid\n\n**Caller:** Security Administrator. **Expected:** HTTP 200.\n\nCriteria are combined with AND."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('developer is Omar Obeid', () => pm.expect(body.developer).to.eql('Omar Obeid'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Omar Obeid - Search Vulnerabilities - SQL injection attempt",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/vulnerabilities/search?cve=' OR '1'='1",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "vulnerabilities",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "cve",
+                  "value": "' OR '1'='1"
+                }
+              ]
+            },
+            "description": "**Developer:** Omar Obeid\n\n**Caller:** Security Administrator. **Expected:** HTTP 200.\n\nThe value is a bound parameter: 0 results."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('developer is Omar Obeid', () => pm.expect(body.developer).to.eql('Omar Obeid'));",
+                  "pm.test('no rows leaked', () => pm.expect(body.data.count).to.eql(0));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Omar Obeid - Search Vulnerabilities - INVALID severity",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/vulnerabilities/search?severity=Huge",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "vulnerabilities",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "severity",
+                  "value": "Huge"
+                }
+              ]
+            },
+            "description": "**Developer:** Omar Obeid\n\n**Caller:** Security Administrator. **Expected:** HTTP 400.\n\nSeverity must be Low, Medium, High or Critical."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 400', () => pm.response.to.have.status(400));",
+                  "pm.test('developer is Omar Obeid', () => pm.expect(body.developer).to.eql('Omar Obeid'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Omar Obeid - Search Vulnerabilities - NO parameters",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/vulnerabilities/search",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "vulnerabilities",
+                "search"
+              ]
+            },
+            "description": "**Developer:** Omar Obeid\n\n**Caller:** Security Administrator. **Expected:** HTTP 400.\n\nAt least one criterion is required."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 400', () => pm.response.to.have.status(400));",
+                  "pm.test('developer is Omar Obeid', () => pm.expect(body.developer).to.eql('Omar Obeid'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Omar Obeid - Update Vulnerability - skip status (Open -> Resolved) REJECTED",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{analyst_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/vulnerabilities/{{vulnerability_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "vulnerabilities",
+                "{{vulnerability_id}}"
+              ]
+            },
+            "description": "**Developer:** Omar Obeid\n\n**Caller:** Security Analyst (analyst_karim). **Expected:** HTTP 400.\n\nStatus must follow Open -> Under Investigation -> In Progress -> Resolved -> Closed.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"Resolved\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 400', () => pm.response.to.have.status(400));",
+                  "pm.test('developer is Omar Obeid', () => pm.expect(body.developer).to.eql('Omar Obeid'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Omar Obeid - Update Vulnerability - Open -> Under Investigation",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{analyst_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/vulnerabilities/{{vulnerability_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "vulnerabilities",
+                "{{vulnerability_id}}"
+              ]
+            },
+            "description": "**Developer:** Omar Obeid\n\n**Caller:** Security Analyst (analyst_karim). **Expected:** HTTP 200.\n\nResponse contains before and after.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"Under Investigation\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('developer is Omar Obeid', () => pm.expect(body.developer).to.eql('Omar Obeid'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Omar Obeid - Update Vulnerability - Under Investigation -> In Progress",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{analyst_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/vulnerabilities/{{vulnerability_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "vulnerabilities",
+                "{{vulnerability_id}}"
+              ]
+            },
+            "description": "**Developer:** Omar Obeid\n\n**Caller:** Security Analyst (analyst_karim). **Expected:** HTTP 200.\n\nNext step.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"In Progress\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('developer is Omar Obeid', () => pm.expect(body.developer).to.eql('Omar Obeid'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Omar Obeid - Update Vulnerability - description, CVSS and severity",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/vulnerabilities/{{vulnerability_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "vulnerabilities",
+                "{{vulnerability_id}}"
+              ]
+            },
+            "description": "**Developer:** Omar Obeid\n\n**Caller:** Security Administrator. **Expected:** HTTP 200.\n\nCVSS 7.5 -> 6.5 so severity must become Medium.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"description\": \"Path traversal; RCE blocked by mod_cgi being disabled\",\n  \"cvss_score\": 6.5,\n  \"severity_level\": \"Medium\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('developer is Omar Obeid', () => pm.expect(body.developer).to.eql('Omar Obeid'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Omar Obeid - Update Vulnerability - resolution date while In Progress REJECTED",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/vulnerabilities/{{vulnerability_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "vulnerabilities",
+                "{{vulnerability_id}}"
+              ]
+            },
+            "description": "**Developer:** Omar Obeid\n\n**Caller:** Security Administrator. **Expected:** HTTP 400.\n\nA resolution date is only allowed once the record is Resolved or Closed.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"resolution_date\": \"{{today}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 400', () => pm.response.to.have.status(400));",
+                  "pm.test('developer is Omar Obeid', () => pm.expect(body.developer).to.eql('Omar Obeid'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Omar Obeid - Update Vulnerability - read-only CVE REJECTED",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/vulnerabilities/{{vulnerability_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "vulnerabilities",
+                "{{vulnerability_id}}"
+              ]
+            },
+            "description": "**Developer:** Omar Obeid\n\n**Caller:** Security Administrator. **Expected:** HTTP 400.\n\nCVE, title, asset and source cannot be changed.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"cve_identifier\": \"CVE-2020-0001\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 400', () => pm.response.to.have.status(400));",
+                  "pm.test('developer is Omar Obeid', () => pm.expect(body.developer).to.eql('Omar Obeid'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Omar Obeid - Update Vulnerability - In Progress -> Resolved",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{analyst_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/vulnerabilities/{{vulnerability_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "vulnerabilities",
+                "{{vulnerability_id}}"
+              ]
+            },
+            "description": "**Developer:** Omar Obeid\n\n**Caller:** Security Analyst (analyst_karim). **Expected:** HTTP 200.\n\nresolution_date is set automatically.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"Resolved\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('developer is Omar Obeid', () => pm.expect(body.developer).to.eql('Omar Obeid'));",
+                  "pm.test('resolution_date set', () => pm.expect(body.data.after.resolution_date).to.not.be.null);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Omar Obeid - Update Vulnerability - Resolved -> Closed",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/vulnerabilities/{{vulnerability_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "vulnerabilities",
+                "{{vulnerability_id}}"
+              ]
+            },
+            "description": "**Developer:** Omar Obeid\n\n**Caller:** Security Administrator. **Expected:** HTTP 200.\n\nFinal state.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"Closed\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('developer is Omar Obeid', () => pm.expect(body.developer).to.eql('Omar Obeid'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Omar Obeid - Update Vulnerability - auditor DENIED",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auditor_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/vulnerabilities/{{vulnerability_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "vulnerabilities",
+                "{{vulnerability_id}}"
+              ]
+            },
+            "description": "**Developer:** Omar Obeid\n\n**Caller:** Auditor. **Expected:** HTTP 403.\n\nAuditors are read-only.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"description\": \"Changed by auditor\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 403', () => pm.response.to.have.status(403));",
+                  "pm.test('developer is Omar Obeid', () => pm.expect(body.developer).to.eql('Omar Obeid'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Omar Obeid - Delete Vulnerability - analyst DENIED",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{analyst_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/vulnerabilities/{{vulnerability_to_delete}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "vulnerabilities",
+                "{{vulnerability_to_delete}}"
+              ]
+            },
+            "description": "**Developer:** Omar Obeid\n\n**Caller:** Security Analyst (analyst_karim). **Expected:** HTTP 403.\n\nOnly the Security Administrator can delete. The attempt is logged."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 403', () => pm.response.to.have.status(403));",
+                  "pm.test('developer is Omar Obeid', () => pm.expect(body.developer).to.eql('Omar Obeid'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Omar Obeid - Delete Vulnerability - admin",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/vulnerabilities/{{vulnerability_to_delete}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "vulnerabilities",
+                "{{vulnerability_to_delete}}"
+              ]
+            },
+            "description": "**Developer:** Omar Obeid\n\n**Caller:** Security Administrator. **Expected:** HTTP 200.\n\nWrites a VULNERABILITY_DELETED audit log."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('developer is Omar Obeid', () => pm.expect(body.developer).to.eql('Omar Obeid'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Omar Obeid - Delete Vulnerability - already deleted (NOT FOUND)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/vulnerabilities/{{vulnerability_to_delete}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "vulnerabilities",
+                "{{vulnerability_to_delete}}"
+              ]
+            },
+            "description": "**Developer:** Omar Obeid\n\n**Caller:** Security Administrator. **Expected:** HTTP 404.\n\nThe record is gone."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 404', () => pm.response.to.have.status(404));",
+                  "pm.test('developer is Omar Obeid', () => pm.expect(body.developer).to.eql('Omar Obeid'));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "2. Notification and Alert Management Service (Omar Obeid)",
+      "item": [
+        {
+          "name": "Omar Obeid - Create Notification - Security Alert to regular user",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/notifications",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "notifications"
+              ]
+            },
+            "description": "**Developer:** Omar Obeid\n\n**Caller:** Security Administrator. **Expected:** HTTP 201.\n\nStarts as Unread. Stores `notification_id`.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"user_id\": 4,\n  \"title\": \"Suspicious login to your account\",\n  \"message\": \"A new login from 203.0.113.45 was detected. Change your password if this was not you.\",\n  \"notification_type\": \"Security Alert\",\n  \"severity_level\": \"High\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 201', () => pm.response.to.have.status(201));",
+                  "pm.test('developer is Omar Obeid', () => pm.expect(body.developer).to.eql('Omar Obeid'));",
+                  "if (body.data) { pm.collectionVariables.set('notification_id', body.data.notification_id); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Omar Obeid - Create Notification - Threat Alert to analyst (by analyst)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{analyst_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/notifications",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "notifications"
+              ]
+            },
+            "description": "**Developer:** Omar Obeid\n\n**Caller:** Security Analyst (analyst_karim). **Expected:** HTTP 201.\n\nAnalysts can raise alerts too.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"user_id\": 2,\n  \"title\": \"IOC match on web server\",\n  \"message\": \"Traffic to 198.51.100.23 (ransomware C2) seen from the main web server\",\n  \"notification_type\": \"Threat Alert\",\n  \"severity_level\": \"Critical\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 201', () => pm.response.to.have.status(201));",
+                  "pm.test('developer is Omar Obeid', () => pm.expect(body.developer).to.eql('Omar Obeid'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Omar Obeid - Create Notification - System Notification to auditor",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/notifications",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "notifications"
+              ]
+            },
+            "description": "**Developer:** Omar Obeid\n\n**Caller:** Security Administrator. **Expected:** HTTP 201.\n\nLow-severity system message.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"user_id\": 5,\n  \"title\": \"Maintenance window\",\n  \"message\": \"The SIEM will be offline Saturday 02:00-03:00\",\n  \"notification_type\": \"System Notification\",\n  \"severity_level\": \"Low\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 201', () => pm.response.to.have.status(201));",
+                  "pm.test('developer is Omar Obeid', () => pm.expect(body.developer).to.eql('Omar Obeid'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Omar Obeid - Create Notification - INVALID type",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/notifications",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "notifications"
+              ]
+            },
+            "description": "**Developer:** Omar Obeid\n\n**Caller:** Security Administrator. **Expected:** HTTP 400.\n\nType must be one of the five notification types.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"user_id\": 4,\n  \"title\": \"Suspicious login to your account\",\n  \"message\": \"A new login from 203.0.113.45 was detected. Change your password if this was not you.\",\n  \"notification_type\": \"Spam\",\n  \"severity_level\": \"High\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 400', () => pm.response.to.have.status(400));",
+                  "pm.test('developer is Omar Obeid', () => pm.expect(body.developer).to.eql('Omar Obeid'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Omar Obeid - Create Notification - MISSING fields",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/notifications",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "notifications"
+              ]
+            },
+            "description": "**Developer:** Omar Obeid\n\n**Caller:** Security Administrator. **Expected:** HTTP 400.\n\nAll fields required.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"user_id\": 4\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 400', () => pm.response.to.have.status(400));",
+                  "pm.test('developer is Omar Obeid', () => pm.expect(body.developer).to.eql('Omar Obeid'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Omar Obeid - Create Notification - recipient NOT FOUND",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/notifications",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "notifications"
+              ]
+            },
+            "description": "**Developer:** Omar Obeid\n\n**Caller:** Security Administrator. **Expected:** HTTP 404.\n\nThe user must exist.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"user_id\": 999,\n  \"title\": \"Suspicious login to your account\",\n  \"message\": \"A new login from 203.0.113.45 was detected. Change your password if this was not you.\",\n  \"notification_type\": \"Security Alert\",\n  \"severity_level\": \"High\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 404', () => pm.response.to.have.status(404));",
+                  "pm.test('developer is Omar Obeid', () => pm.expect(body.developer).to.eql('Omar Obeid'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Omar Obeid - Create Notification - suspended recipient REJECTED",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/notifications",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "notifications"
+              ]
+            },
+            "description": "**Developer:** Omar Obeid\n\n**Caller:** Security Administrator. **Expected:** HTTP 400.\n\nSuspended or inactive accounts cannot be notified.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"user_id\": 6,\n  \"title\": \"Suspicious login to your account\",\n  \"message\": \"A new login from 203.0.113.45 was detected. Change your password if this was not you.\",\n  \"notification_type\": \"Security Alert\",\n  \"severity_level\": \"High\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 400', () => pm.response.to.have.status(400));",
+                  "pm.test('developer is Omar Obeid', () => pm.expect(body.developer).to.eql('Omar Obeid'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Omar Obeid - Create Notification - regular user DENIED",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/notifications",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "notifications"
+              ]
+            },
+            "description": "**Developer:** Omar Obeid\n\n**Caller:** Regular User. **Expected:** HTTP 403.\n\nOnly Administrators and Analysts send notifications.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"user_id\": 4,\n  \"title\": \"Suspicious login to your account\",\n  \"message\": \"A new login from 203.0.113.45 was detected. Change your password if this was not you.\",\n  \"notification_type\": \"Security Alert\",\n  \"severity_level\": \"High\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 403', () => pm.response.to.have.status(403));",
+                  "pm.test('developer is Omar Obeid', () => pm.expect(body.developer).to.eql('Omar Obeid'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Omar Obeid - Retrieve User Notifications - own inbox (regular user)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/notifications/user/4",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "notifications",
+                "user",
+                "4"
+              ]
+            },
+            "description": "**Developer:** Omar Obeid\n\n**Caller:** Regular User. **Expected:** HTTP 200.\n\nNewest first, with count and unread_count."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('developer is Omar Obeid', () => pm.expect(body.developer).to.eql('Omar Obeid'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Omar Obeid - Retrieve User Notifications - admin views analyst",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/notifications/user/2",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "notifications",
+                "user",
+                "2"
+              ]
+            },
+            "description": "**Developer:** Omar Obeid\n\n**Caller:** Security Administrator. **Expected:** HTTP 200.\n\nAdministrators and Auditors can view any inbox."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('developer is Omar Obeid', () => pm.expect(body.developer).to.eql('Omar Obeid'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Omar Obeid - Retrieve User Notifications - EMPTY result",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auditor_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/notifications/user/3",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "notifications",
+                "user",
+                "3"
+              ]
+            },
+            "description": "**Developer:** Omar Obeid\n\n**Caller:** Auditor. **Expected:** HTTP 200.\n\nanalyst_lina has no notifications: count 0 and an empty list."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('developer is Omar Obeid', () => pm.expect(body.developer).to.eql('Omar Obeid'));",
+                  "pm.test('empty list', () => pm.expect(body.data.notifications).to.eql([]));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Omar Obeid - Retrieve User Notifications - other user's inbox DENIED",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/notifications/user/2",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "notifications",
+                "user",
+                "2"
+              ]
+            },
+            "description": "**Developer:** Omar Obeid\n\n**Caller:** Regular User. **Expected:** HTTP 403.\n\nUsers can only see their own notifications."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 403', () => pm.response.to.have.status(403));",
+                  "pm.test('developer is Omar Obeid', () => pm.expect(body.developer).to.eql('Omar Obeid'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Omar Obeid - Retrieve User Notifications - user NOT FOUND",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/notifications/user/999",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "notifications",
+                "user",
+                "999"
+              ]
+            },
+            "description": "**Developer:** Omar Obeid\n\n**Caller:** Security Administrator. **Expected:** HTTP 404.\n\nUnknown user."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 404', () => pm.response.to.have.status(404));",
+                  "pm.test('developer is Omar Obeid', () => pm.expect(body.developer).to.eql('Omar Obeid'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Omar Obeid - Retrieve Specific Notification - own",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/notifications/{{notification_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "notifications",
+                "{{notification_id}}"
+              ]
+            },
+            "description": "**Developer:** Omar Obeid\n\n**Caller:** Regular User. **Expected:** HTTP 200.\n\nThe recipient can open it."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('developer is Omar Obeid', () => pm.expect(body.developer).to.eql('Omar Obeid'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Omar Obeid - Retrieve Specific Notification - someone else's DENIED",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{analyst_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/notifications/{{notification_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "notifications",
+                "{{notification_id}}"
+              ]
+            },
+            "description": "**Developer:** Omar Obeid\n\n**Caller:** Security Analyst (analyst_karim). **Expected:** HTTP 403.\n\nNot the recipient."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 403', () => pm.response.to.have.status(403));",
+                  "pm.test('developer is Omar Obeid', () => pm.expect(body.developer).to.eql('Omar Obeid'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Omar Obeid - Retrieve Specific Notification - NOT FOUND",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/notifications/99999",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "notifications",
+                "99999"
+              ]
+            },
+            "description": "**Developer:** Omar Obeid\n\n**Caller:** Security Administrator. **Expected:** HTTP 404.\n\nUnknown id."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 404', () => pm.response.to.have.status(404));",
+                  "pm.test('developer is Omar Obeid', () => pm.expect(body.developer).to.eql('Omar Obeid'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Omar Obeid - Mark Notification as Read - not the recipient DENIED",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{analyst_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/notifications/{{notification_id}}/read",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "notifications",
+                "{{notification_id}}",
+                "read"
+              ]
+            },
+            "description": "**Developer:** Omar Obeid\n\n**Caller:** Security Analyst (analyst_karim). **Expected:** HTTP 403.\n\nOnly the recipient (or an administrator) can mark it read."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 403', () => pm.response.to.have.status(403));",
+                  "pm.test('developer is Omar Obeid', () => pm.expect(body.developer).to.eql('Omar Obeid'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Omar Obeid - Mark Notification as Read - recipient",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/notifications/{{notification_id}}/read",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "notifications",
+                "{{notification_id}}",
+                "read"
+              ]
+            },
+            "description": "**Developer:** Omar Obeid\n\n**Caller:** Regular User. **Expected:** HTTP 200.\n\nStatus becomes Read and read_date is set."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('developer is Omar Obeid', () => pm.expect(body.developer).to.eql('Omar Obeid'));",
+                  "pm.test('status Read', () => pm.expect(body.data.status).to.eql('Read'));",
+                  "pm.test('read_date set', () => pm.expect(body.data.read_date).to.not.be.null);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Omar Obeid - Mark Notification as Read - already read",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/notifications/{{notification_id}}/read",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "notifications",
+                "{{notification_id}}",
+                "read"
+              ]
+            },
+            "description": "**Developer:** Omar Obeid\n\n**Caller:** Regular User. **Expected:** HTTP 200.\n\nIdempotent: the original read_date is kept."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('developer is Omar Obeid', () => pm.expect(body.developer).to.eql('Omar Obeid'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Omar Obeid - Search Notifications - by user",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/notifications/search?user=analyst_karim",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "notifications",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "user",
+                  "value": "analyst_karim"
+                }
+              ]
+            },
+            "description": "**Developer:** Omar Obeid\n\n**Caller:** Security Administrator. **Expected:** HTTP 200.\n\nUser id or username."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('developer is Omar Obeid', () => pm.expect(body.developer).to.eql('Omar Obeid'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Omar Obeid - Search Notifications - by type",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auditor_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/notifications/search?type=System Notification",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "notifications",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "type",
+                  "value": "System Notification"
+                }
+              ]
+            },
+            "description": "**Developer:** Omar Obeid\n\n**Caller:** Auditor. **Expected:** HTTP 200.\n\nExact type."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('developer is Omar Obeid', () => pm.expect(body.developer).to.eql('Omar Obeid'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Omar Obeid - Search Notifications - by severity",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/notifications/search?severity=Critical",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "notifications",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "severity",
+                  "value": "Critical"
+                }
+              ]
+            },
+            "description": "**Developer:** Omar Obeid\n\n**Caller:** Security Administrator. **Expected:** HTTP 200.\n\nExact severity."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('developer is Omar Obeid', () => pm.expect(body.developer).to.eql('Omar Obeid'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Omar Obeid - Search Notifications - by status",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/notifications/search?status=Unread",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "notifications",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "Unread"
+                }
+              ]
+            },
+            "description": "**Developer:** Omar Obeid\n\n**Caller:** Security Administrator. **Expected:** HTTP 200.\n\nUnread or Read."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('developer is Omar Obeid', () => pm.expect(body.developer).to.eql('Omar Obeid'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Omar Obeid - Search Notifications - combined",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/notifications/search?user=4&status=Unread&type=System Notification",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "notifications",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "user",
+                  "value": "4"
+                },
+                {
+                  "key": "status",
+                  "value": "Unread"
+                },
+                {
+                  "key": "type",
+                  "value": "System Notification"
+                }
+              ]
+            },
+            "description": "**Developer:** Omar Obeid\n\n**Caller:** Security Administrator. **Expected:** HTTP 200.\n\nCriteria combined with AND."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('developer is Omar Obeid', () => pm.expect(body.developer).to.eql('Omar Obeid'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Omar Obeid - Search Notifications - regular user searches own inbox",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/notifications/search?status=Unread",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "notifications",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "Unread"
+                }
+              ]
+            },
+            "description": "**Developer:** Omar Obeid\n\n**Caller:** Regular User. **Expected:** HTTP 200.\n\nResults are limited to the caller's notifications."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('developer is Omar Obeid', () => pm.expect(body.developer).to.eql('Omar Obeid'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Omar Obeid - Search Notifications - regular user searches another user DENIED",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/notifications/search?user=2",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "notifications",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "user",
+                  "value": "2"
+                }
+              ]
+            },
+            "description": "**Developer:** Omar Obeid\n\n**Caller:** Regular User. **Expected:** HTTP 403.\n\nUsers cannot search other inboxes."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 403', () => pm.response.to.have.status(403));",
+                  "pm.test('developer is Omar Obeid', () => pm.expect(body.developer).to.eql('Omar Obeid'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Omar Obeid - Search Notifications - INVALID status",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/notifications/search?status=Seen",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "notifications",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "Seen"
+                }
+              ]
+            },
+            "description": "**Developer:** Omar Obeid\n\n**Caller:** Security Administrator. **Expected:** HTTP 400.\n\nStatus must be Unread or Read."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 400', () => pm.response.to.have.status(400));",
+                  "pm.test('developer is Omar Obeid', () => pm.expect(body.developer).to.eql('Omar Obeid'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Omar Obeid - Delete Notification - regular user DENIED",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/notifications/{{notification_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "notifications",
+                "{{notification_id}}"
+              ]
+            },
+            "description": "**Developer:** Omar Obeid\n\n**Caller:** Regular User. **Expected:** HTTP 403.\n\nOnly the Security Administrator deletes."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 403', () => pm.response.to.have.status(403));",
+                  "pm.test('developer is Omar Obeid', () => pm.expect(body.developer).to.eql('Omar Obeid'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Omar Obeid - Delete Notification - admin",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/notifications/{{notification_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "notifications",
+                "{{notification_id}}"
+              ]
+            },
+            "description": "**Developer:** Omar Obeid\n\n**Caller:** Security Administrator. **Expected:** HTTP 200.\n\nWrites an audit log."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('developer is Omar Obeid', () => pm.expect(body.developer).to.eql('Omar Obeid'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Omar Obeid - Delete Notification - already deleted (NOT FOUND)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/notifications/{{notification_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "notifications",
+                "{{notification_id}}"
+              ]
+            },
+            "description": "**Developer:** Omar Obeid\n\n**Caller:** Security Administrator. **Expected:** HTTP 404.\n\nThe record is gone."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 404', () => pm.response.to.have.status(404));",
+                  "pm.test('developer is Omar Obeid', () => pm.expect(body.developer).to.eql('Omar Obeid'));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "3. Security Playbook and Response Automation Service (Omar Obeid)",
+      "item": [
+        {
+          "name": "Omar Obeid - Create Playbook - DDoS Mitigation",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/playbooks",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "playbooks"
+              ]
+            },
+            "description": "**Developer:** Omar Obeid\n\n**Caller:** Security Administrator. **Expected:** HTTP 201.\n\ncreated_by is the logged-in administrator. Stores `playbook_id`.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"playbook_name\": \"DDoS Mitigation\",\n  \"description\": \"Keep public services online during a traffic flood\",\n  \"incident_category\": \"Denial of Service\",\n  \"severity_level\": \"High\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 201', () => pm.response.to.have.status(201));",
+                  "pm.test('developer is Omar Obeid', () => pm.expect(body.developer).to.eql('Omar Obeid'));",
+                  "if (body.data) { pm.collectionVariables.set('playbook_id', body.data.playbook_id); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Omar Obeid - Create Playbook - Data Leak Response",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/playbooks",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "playbooks"
+              ]
+            },
+            "description": "**Developer:** Omar Obeid\n\n**Caller:** Security Administrator. **Expected:** HTTP 201.\n\nSecond playbook (deleted at the end). Stores `playbook_to_delete`.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"playbook_name\": \"Data Leak Response\",\n  \"description\": \"Contain and report a confirmed data leak\",\n  \"incident_category\": \"Data Leakage\",\n  \"severity_level\": \"Critical\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 201', () => pm.response.to.have.status(201));",
+                  "pm.test('developer is Omar Obeid', () => pm.expect(body.developer).to.eql('Omar Obeid'));",
+                  "if (body.data) { pm.collectionVariables.set('playbook_to_delete', body.data.playbook_id); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Omar Obeid - Create Playbook - DUPLICATE name",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/playbooks",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "playbooks"
+              ]
+            },
+            "description": "**Developer:** Omar Obeid\n\n**Caller:** Security Administrator. **Expected:** HTTP 409.\n\nNames are unique (case-insensitive).",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"playbook_name\": \"ddos mitigation\",\n  \"description\": \"Keep public services online during a traffic flood\",\n  \"incident_category\": \"Denial of Service\",\n  \"severity_level\": \"High\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 409', () => pm.response.to.have.status(409));",
+                  "pm.test('developer is Omar Obeid', () => pm.expect(body.developer).to.eql('Omar Obeid'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Omar Obeid - Create Playbook - INVALID category and severity",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/playbooks",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "playbooks"
+              ]
+            },
+            "description": "**Developer:** Omar Obeid\n\n**Caller:** Security Administrator. **Expected:** HTTP 400.\n\nCategory must be an incident category; severity Low-Critical.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"playbook_name\": \"Bad\",\n  \"description\": \"Keep public services online during a traffic flood\",\n  \"incident_category\": \"Alien Invasion\",\n  \"severity_level\": \"Urgent\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 400', () => pm.response.to.have.status(400));",
+                  "pm.test('developer is Omar Obeid', () => pm.expect(body.developer).to.eql('Omar Obeid'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Omar Obeid - Create Playbook - MISSING fields",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/playbooks",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "playbooks"
+              ]
+            },
+            "description": "**Developer:** Omar Obeid\n\n**Caller:** Security Administrator. **Expected:** HTTP 400.\n\nAll fields required.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"playbook_name\": \"No details\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 400', () => pm.response.to.have.status(400));",
+                  "pm.test('developer is Omar Obeid', () => pm.expect(body.developer).to.eql('Omar Obeid'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Omar Obeid - Create Playbook - analyst DENIED",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{analyst_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/playbooks",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "playbooks"
+              ]
+            },
+            "description": "**Developer:** Omar Obeid\n\n**Caller:** Security Analyst (analyst_karim). **Expected:** HTTP 403.\n\nOnly administrators create.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"playbook_name\": \"Analyst playbook\",\n  \"description\": \"Keep public services online during a traffic flood\",\n  \"incident_category\": \"Denial of Service\",\n  \"severity_level\": \"High\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 403', () => pm.response.to.have.status(403));",
+                  "pm.test('developer is Omar Obeid', () => pm.expect(body.developer).to.eql('Omar Obeid'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Omar Obeid - Retrieve All Playbooks - admin",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/playbooks",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "playbooks"
+              ]
+            },
+            "description": "**Developer:** Omar Obeid\n\n**Caller:** Security Administrator. **Expected:** HTTP 200.\n\nEach playbook with its progress."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('developer is Omar Obeid', () => pm.expect(body.developer).to.eql('Omar Obeid'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Omar Obeid - Retrieve All Playbooks - analyst",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{analyst_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/playbooks",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "playbooks"
+              ]
+            },
+            "description": "**Developer:** Omar Obeid\n\n**Caller:** Security Analyst (analyst_karim). **Expected:** HTTP 200.\n\nAnalysts can list."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('developer is Omar Obeid', () => pm.expect(body.developer).to.eql('Omar Obeid'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Omar Obeid - Retrieve All Playbooks - auditor",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auditor_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/playbooks",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "playbooks"
+              ]
+            },
+            "description": "**Developer:** Omar Obeid\n\n**Caller:** Auditor. **Expected:** HTTP 200.\n\nAuditors can list."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('developer is Omar Obeid', () => pm.expect(body.developer).to.eql('Omar Obeid'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Omar Obeid - Retrieve All Playbooks - regular user DENIED",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/playbooks",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "playbooks"
+              ]
+            },
+            "description": "**Developer:** Omar Obeid\n\n**Caller:** Regular User. **Expected:** HTTP 403.\n\nNo access."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 403', () => pm.response.to.have.status(403));",
+                  "pm.test('developer is Omar Obeid', () => pm.expect(body.developer).to.eql('Omar Obeid'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Omar Obeid - Add Response Action - step 1",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/playbooks/{{playbook_id}}/actions",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "playbooks",
+                "{{playbook_id}}",
+                "actions"
+              ]
+            },
+            "description": "**Developer:** Omar Obeid\n\n**Caller:** Security Administrator. **Expected:** HTTP 201.\n\nStores `action_1`.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"action_description\": \"Enable rate limiting and geo-blocking on the edge firewall\",\n  \"step_number\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 201', () => pm.response.to.have.status(201));",
+                  "pm.test('developer is Omar Obeid', () => pm.expect(body.developer).to.eql('Omar Obeid'));",
+                  "if (body.data) { pm.collectionVariables.set('action_1', body.data.action.action_id); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Omar Obeid - Add Response Action - step 3 (added out of order)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{analyst_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/playbooks/{{playbook_id}}/actions",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "playbooks",
+                "{{playbook_id}}",
+                "actions"
+              ]
+            },
+            "description": "**Developer:** Omar Obeid\n\n**Caller:** Security Analyst (analyst_karim). **Expected:** HTTP 201.\n\nSteps can be added in any order; they are returned sorted. Stores `action_3`.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"action_description\": \"Scale out the web tier behind the load balancer\",\n  \"step_number\": 3\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 201', () => pm.response.to.have.status(201));",
+                  "pm.test('developer is Omar Obeid', () => pm.expect(body.developer).to.eql('Omar Obeid'));",
+                  "if (body.data) { pm.collectionVariables.set('action_3', body.data.action.action_id); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Omar Obeid - Add Response Action - step 2 assigned to analyst_lina",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{analyst_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/playbooks/{{playbook_id}}/actions",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "playbooks",
+                "{{playbook_id}}",
+                "actions"
+              ]
+            },
+            "description": "**Developer:** Omar Obeid\n\n**Caller:** Security Analyst (analyst_karim). **Expected:** HTTP 201.\n\nThe assignee gets a System Notification. Stores `action_2`.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"action_description\": \"Contact the ISP to enable upstream scrubbing\",\n  \"step_number\": 2,\n  \"assigned_user_id\": 3\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 201', () => pm.response.to.have.status(201));",
+                  "pm.test('developer is Omar Obeid', () => pm.expect(body.developer).to.eql('Omar Obeid'));",
+                  "if (body.data) { pm.collectionVariables.set('action_2', body.data.action.action_id); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Omar Obeid - Add Response Action - DUPLICATE step number",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/playbooks/{{playbook_id}}/actions",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "playbooks",
+                "{{playbook_id}}",
+                "actions"
+              ]
+            },
+            "description": "**Developer:** Omar Obeid\n\n**Caller:** Security Administrator. **Expected:** HTTP 409.\n\nstep_number is unique per playbook.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"action_description\": \"Another step two\",\n  \"step_number\": 2\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 409', () => pm.response.to.have.status(409));",
+                  "pm.test('developer is Omar Obeid', () => pm.expect(body.developer).to.eql('Omar Obeid'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Omar Obeid - Add Response Action - INVALID step number",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/playbooks/{{playbook_id}}/actions",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "playbooks",
+                "{{playbook_id}}",
+                "actions"
+              ]
+            },
+            "description": "**Developer:** Omar Obeid\n\n**Caller:** Security Administrator. **Expected:** HTTP 400.\n\nMust be a positive integer.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"action_description\": \"Step zero\",\n  \"step_number\": 0\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 400', () => pm.response.to.have.status(400));",
+                  "pm.test('developer is Omar Obeid', () => pm.expect(body.developer).to.eql('Omar Obeid'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Omar Obeid - Add Response Action - assign to regular user REJECTED",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/playbooks/{{playbook_id}}/actions",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "playbooks",
+                "{{playbook_id}}",
+                "actions"
+              ]
+            },
+            "description": "**Developer:** Omar Obeid\n\n**Caller:** Security Administrator. **Expected:** HTTP 400.\n\nOnly administrators and analysts can be assigned.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"action_description\": \"Notify customers\",\n  \"step_number\": 4,\n  \"assigned_user_id\": 4\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 400', () => pm.response.to.have.status(400));",
+                  "pm.test('developer is Omar Obeid', () => pm.expect(body.developer).to.eql('Omar Obeid'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Omar Obeid - Add Response Action - playbook NOT FOUND",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/playbooks/99999/actions",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "playbooks",
+                "99999",
+                "actions"
+              ]
+            },
+            "description": "**Developer:** Omar Obeid\n\n**Caller:** Security Administrator. **Expected:** HTTP 404.\n\nUnknown playbook.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"action_description\": \"Orphan step\",\n  \"step_number\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 404', () => pm.response.to.have.status(404));",
+                  "pm.test('developer is Omar Obeid', () => pm.expect(body.developer).to.eql('Omar Obeid'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Omar Obeid - Add Response Action - auditor DENIED",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auditor_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/playbooks/{{playbook_id}}/actions",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "playbooks",
+                "{{playbook_id}}",
+                "actions"
+              ]
+            },
+            "description": "**Developer:** Omar Obeid\n\n**Caller:** Auditor. **Expected:** HTTP 403.\n\nAuditors are read-only.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"action_description\": \"Auditor step\",\n  \"step_number\": 5\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 403', () => pm.response.to.have.status(403));",
+                  "pm.test('developer is Omar Obeid', () => pm.expect(body.developer).to.eql('Omar Obeid'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Omar Obeid - Add Response Action - step 1 of playbook to delete",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/playbooks/{{playbook_to_delete}}/actions",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "playbooks",
+                "{{playbook_to_delete}}",
+                "actions"
+              ]
+            },
+            "description": "**Developer:** Omar Obeid\n\n**Caller:** Security Administrator. **Expected:** HTTP 201.\n\nShows that deleting a playbook removes its actions.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"action_description\": \"Revoke the leaked API keys\",\n  \"step_number\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 201', () => pm.response.to.have.status(201));",
+                  "pm.test('developer is Omar Obeid', () => pm.expect(body.developer).to.eql('Omar Obeid'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Omar Obeid - Retrieve Specific Playbook - actions in order",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{analyst_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/playbooks/{{playbook_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "playbooks",
+                "{{playbook_id}}"
+              ]
+            },
+            "description": "**Developer:** Omar Obeid\n\n**Caller:** Security Analyst (analyst_karim). **Expected:** HTTP 200.\n\nSteps returned 1, 2, 3 with progress 0%."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('developer is Omar Obeid', () => pm.expect(body.developer).to.eql('Omar Obeid'));",
+                  "pm.test('ordered steps', () => pm.expect(body.data.actions.map(a => a.step_number)).to.eql([1, 2, 3]));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Omar Obeid - Retrieve Specific Playbook - NOT FOUND",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auditor_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/playbooks/99999",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "playbooks",
+                "99999"
+              ]
+            },
+            "description": "**Developer:** Omar Obeid\n\n**Caller:** Auditor. **Expected:** HTTP 404.\n\nUnknown id."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 404', () => pm.response.to.have.status(404));",
+                  "pm.test('developer is Omar Obeid', () => pm.expect(body.developer).to.eql('Omar Obeid'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Omar Obeid - Update Action Status - skip (Pending -> Completed) REJECTED",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{analyst_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/actions/{{action_1}}/status",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "actions",
+                "{{action_1}}",
+                "status"
+              ]
+            },
+            "description": "**Developer:** Omar Obeid\n\n**Caller:** Security Analyst (analyst_karim). **Expected:** HTTP 400.\n\nPending -> In Progress -> Completed only.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"Completed\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 400', () => pm.response.to.have.status(400));",
+                  "pm.test('developer is Omar Obeid', () => pm.expect(body.developer).to.eql('Omar Obeid'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Omar Obeid - Update Action Status - step 2 before step 1 is done REJECTED",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{lina_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/actions/{{action_2}}/status",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "actions",
+                "{{action_2}}",
+                "status"
+              ]
+            },
+            "description": "**Developer:** Omar Obeid\n\n**Caller:** Security Analyst (analyst_lina). **Expected:** HTTP 409.\n\nSteps are executed in order.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"In Progress\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 409', () => pm.response.to.have.status(409));",
+                  "pm.test('developer is Omar Obeid', () => pm.expect(body.developer).to.eql('Omar Obeid'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Omar Obeid - Update Action Status - step 1 Pending -> In Progress",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{analyst_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/actions/{{action_1}}/status",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "actions",
+                "{{action_1}}",
+                "status"
+              ]
+            },
+            "description": "**Developer:** Omar Obeid\n\n**Caller:** Security Analyst (analyst_karim). **Expected:** HTTP 200.\n\nUnassigned step: the analyst who starts it becomes the assignee.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"In Progress\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('developer is Omar Obeid', () => pm.expect(body.developer).to.eql('Omar Obeid'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Omar Obeid - Update Action Status - step 1 In Progress -> Completed",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{analyst_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/actions/{{action_1}}/status",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "actions",
+                "{{action_1}}",
+                "status"
+              ]
+            },
+            "description": "**Developer:** Omar Obeid\n\n**Caller:** Security Analyst (analyst_karim). **Expected:** HTTP 200.\n\ncompletion_date is set automatically; progress 1/3.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"Completed\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('developer is Omar Obeid', () => pm.expect(body.developer).to.eql('Omar Obeid'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Omar Obeid - Update Action Status - another analyst's step DENIED",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{analyst_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/actions/{{action_2}}/status",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "actions",
+                "{{action_2}}",
+                "status"
+              ]
+            },
+            "description": "**Developer:** Omar Obeid\n\n**Caller:** Security Analyst (analyst_karim). **Expected:** HTTP 403.\n\nStep 2 belongs to analyst_lina.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"In Progress\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 403', () => pm.response.to.have.status(403));",
+                  "pm.test('developer is Omar Obeid', () => pm.expect(body.developer).to.eql('Omar Obeid'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Omar Obeid - Update Action Status - step 2 by assignee -> In Progress",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{lina_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/actions/{{action_2}}/status",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "actions",
+                "{{action_2}}",
+                "status"
+              ]
+            },
+            "description": "**Developer:** Omar Obeid\n\n**Caller:** Security Analyst (analyst_lina). **Expected:** HTTP 200.\n\nAssigned analyst starts the step.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"In Progress\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('developer is Omar Obeid', () => pm.expect(body.developer).to.eql('Omar Obeid'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Omar Obeid - Update Action Status - step 2 Completed with completion date",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{lina_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/actions/{{action_2}}/status",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "actions",
+                "{{action_2}}",
+                "status"
+              ]
+            },
+            "description": "**Developer:** Omar Obeid\n\n**Caller:** Security Analyst (analyst_lina). **Expected:** HTTP 200.\n\nExplicit completion date (YYYY-MM-DD).",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"Completed\",\n  \"completion_date\": \"{{today}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('developer is Omar Obeid', () => pm.expect(body.developer).to.eql('Omar Obeid'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Omar Obeid - Update Action Status - admin reassigns step 3 and starts it",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/actions/{{action_3}}/status",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "actions",
+                "{{action_3}}",
+                "status"
+              ]
+            },
+            "description": "**Developer:** Omar Obeid\n\n**Caller:** Security Administrator. **Expected:** HTTP 200.\n\nAssigns step 3 to analyst_karim (id 2), who is notified.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"In Progress\",\n  \"assigned_user_id\": 2\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('developer is Omar Obeid', () => pm.expect(body.developer).to.eql('Omar Obeid'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Omar Obeid - Update Action Status - INVALID status",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/actions/{{action_3}}/status",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "actions",
+                "{{action_3}}",
+                "status"
+              ]
+            },
+            "description": "**Developer:** Omar Obeid\n\n**Caller:** Security Administrator. **Expected:** HTTP 400.\n\nStatus must be Pending, In Progress or Completed.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"Done\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 400', () => pm.response.to.have.status(400));",
+                  "pm.test('developer is Omar Obeid', () => pm.expect(body.developer).to.eql('Omar Obeid'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Omar Obeid - Update Action Status - auditor DENIED",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auditor_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/actions/{{action_3}}/status",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "actions",
+                "{{action_3}}",
+                "status"
+              ]
+            },
+            "description": "**Developer:** Omar Obeid\n\n**Caller:** Auditor. **Expected:** HTTP 403.\n\nAuditors are read-only.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"Completed\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 403', () => pm.response.to.have.status(403));",
+                  "pm.test('developer is Omar Obeid', () => pm.expect(body.developer).to.eql('Omar Obeid'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Omar Obeid - Update Action Status - action NOT FOUND",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/actions/99999/status",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "actions",
+                "99999",
+                "status"
+              ]
+            },
+            "description": "**Developer:** Omar Obeid\n\n**Caller:** Security Administrator. **Expected:** HTTP 404.\n\nUnknown id.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"In Progress\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 404', () => pm.response.to.have.status(404));",
+                  "pm.test('developer is Omar Obeid', () => pm.expect(body.developer).to.eql('Omar Obeid'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Omar Obeid - Retrieve Specific Playbook - after progress",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auditor_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/playbooks/{{playbook_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "playbooks",
+                "{{playbook_id}}"
+              ]
+            },
+            "description": "**Developer:** Omar Obeid\n\n**Caller:** Auditor. **Expected:** HTTP 200.\n\n2 of 3 steps completed (67%)."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('developer is Omar Obeid', () => pm.expect(body.developer).to.eql('Omar Obeid'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Omar Obeid - Delete Playbook - analyst DENIED",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{analyst_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/playbooks/{{playbook_to_delete}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "playbooks",
+                "{{playbook_to_delete}}"
+              ]
+            },
+            "description": "**Developer:** Omar Obeid\n\n**Caller:** Security Analyst (analyst_karim). **Expected:** HTTP 403.\n\nOnly administrators delete playbooks."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 403', () => pm.response.to.have.status(403));",
+                  "pm.test('developer is Omar Obeid', () => pm.expect(body.developer).to.eql('Omar Obeid'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Omar Obeid - Delete Playbook - admin (removes its actions)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/playbooks/{{playbook_to_delete}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "playbooks",
+                "{{playbook_to_delete}}"
+              ]
+            },
+            "description": "**Developer:** Omar Obeid\n\n**Caller:** Security Administrator. **Expected:** HTTP 200.\n\nResponse shows how many response actions were removed (ON DELETE CASCADE)."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('developer is Omar Obeid', () => pm.expect(body.developer).to.eql('Omar Obeid'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Omar Obeid - Delete Playbook - already deleted (NOT FOUND)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/playbooks/{{playbook_to_delete}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "playbooks",
+                "{{playbook_to_delete}}"
+              ]
+            },
+            "description": "**Developer:** Omar Obeid\n\n**Caller:** Security Administrator. **Expected:** HTTP 404.\n\nThe playbook is gone."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('status is 404', () => pm.response.to.have.status(404));",
+                  "pm.test('developer is Omar Obeid', () => pm.expect(body.developer).to.eql('Omar Obeid'));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
