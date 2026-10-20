@@ -2,6 +2,7 @@
 # Security Incident Detection and Response Management System - Flask backend
 # Services 1-3 (Users and Identity, Asset Management, Incident Management): Maya Zeaiter
 # Services 4-6 (Threat Intelligence, Security Audit Logging, Security Reports): Zeinab Harb
+# Services 7-9 (Vulnerability Management, Notifications and Alerts, Security Playbooks): Omar Obeid
 import os
 import sqlite3
 
@@ -14,9 +15,12 @@ from common import STUDENT_NAME, ApiError, error_body
 from database import init_db
 from incidents_service import incidents_bp
 from logs_service import logs_bp
+from notifications_service import notifications_bp
+from playbooks_service import playbooks_bp
 from reports_service import reports_bp
 from threats_service import threats_bp
 from users_service import users_bp
+from vulnerabilities_service import vulnerabilities_bp
 
 
 def create_app():
@@ -31,6 +35,9 @@ def create_app():
     app.register_blueprint(threats_bp)  # Zeinab Harb
     app.register_blueprint(logs_bp)  # Zeinab Harb
     app.register_blueprint(reports_bp)  # Zeinab Harb
+    app.register_blueprint(vulnerabilities_bp)  # Omar Obeid
+    app.register_blueprint(notifications_bp)  # Omar Obeid
+    app.register_blueprint(playbooks_bp)  # Omar Obeid
 
     @app.errorhandler(ApiError)
     def handle_api_error(e):
