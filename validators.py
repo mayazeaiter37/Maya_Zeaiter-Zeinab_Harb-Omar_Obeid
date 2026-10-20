@@ -143,3 +143,54 @@ def check_date(errors, data, field):
         datetime.strptime(value, "%Y-%m-%d")
     except (TypeError, ValueError):
         errors[field] = "Invalid date. Use the format YYYY-MM-DD"
+
+
+# ---------------------------------------------------------------- vulnerabilities, notifications, playbooks (Omar Obeid)
+CVE_RE = re.compile(r"^CVE-(\d{4})-(\d{4,})$")
+DATETIME_FORMATS = ("%Y-%m-%d", "%Y-%m-%d %H:%M:%S")
+
+
+def check_cve(errors, data, field="cve_identifier"):
+    """CVE-YYYY-NNNN: 'CVE', a year from 1999 (first CVE list) to next year, then 4 or more digits."""
+    value = data.get(field)
+    if value is None:
+        return
+    if not isinstance(value, str):
+        errors[field] = "Must be a string"
+        return
+    match = CVE_RE.match(value.strip().upper())
+    if not match:
+        errors[field] = "Invalid CVE format. Expected CVE-YYYY-NNNN (4 or more digits), e.g. CVE-2024-6387"
+    elif not 1999 <= int(match.group(1)) <= datetime.utcnow().year + 1:
+        errors[field] = f"Invalid CVE year {match.group(1)}"
+
+
+def check_cvss(errors, data, field="cvss_score"):
+    value = data.get(field)
+    if value is None:
+        return
+    if not isinstance(value, (int, float)) or isinstance(value, bool):
+        errors[field] = "Must be a number between 0.0 and 10.0"
+    elif not 0 <= value <= 10:
+        errors[field] = "CVSS score must be between 0.0 and 10.0"
+    elif round(value, 1) != value:
+        errors[field] = "CVSS score has one decimal place (e.g. 7.5)"
+
+
+def parse_datetime(errors, data, field):
+    """Accept YYYY-MM-DD or YYYY-MM-DD HH:MM:SS (UTC); return the stored form, or None."""
+    value = data.get(field)
+    if value is None:
+        return None
+    for fmt in DATETIME_FORMATS:
+        try:
+            parsed = datetime.strptime(value, fmt) if isinstance(value, str) else None
+        except ValueError:
+            continue
+        if parsed is not None:
+            if parsed > datetime.utcnow():
+                errors[field] = "Date cannot be in the future"
+                return None
+            return parsed.strftime("%Y-%m-%d %H:%M:%S")
+    errors[field] = "Invalid date. Use YYYY-MM-DD or YYYY-MM-DD HH:MM:SS"
+    return None

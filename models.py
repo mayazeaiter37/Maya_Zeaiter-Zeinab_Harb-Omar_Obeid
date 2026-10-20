@@ -287,3 +287,207 @@ class LogRepository(BaseRepository):
         where = " WHERE " + " AND ".join(clauses) if clauses else ""
         rows = self._query(f"SELECT * FROM logs{where} ORDER BY log_id DESC", tuple(params))
         return [self._to_entity(r) for r in rows]
+
+
+# ---------------------------------------------------------------- Services 7-9 entities (Omar Obeid)
+@dataclass
+class Vulnerability:
+    """A known weakness (CVE) on an asset. Its status only moves forward through STATUS_FLOW. (Omar Obeid)"""
+
+    STATUS_FLOW = ["Open", "Under Investigation", "In Progress", "Resolved", "Closed"]
+    SEVERITIES = ["Low", "Medium", "High", "Critical"]
+
+    vulnerability_id: int
+    title: str
+    description: str
+    cve_identifier: str
+    cvss_score: float
+    severity_level: str
+    affected_asset_id: int
+    discovery_source: str
+    status: str
+    creation_date: str
+    resolution_date: Optional[str]
+
+    @staticmethod
+    def severity_for_score(score):
+        """CVSS v3 qualitative rating: 0.0-3.9 Low, 4.0-6.9 Medium, 7.0-8.9 High, 9.0-10.0 Critical."""
+        if score >= 9.0:
+            return "Critical"
+        if score >= 7.0:
+            return "High"
+        if score >= 4.0:
+            return "Medium"
+        return "Low"
+
+    def next_status(self):
+        index = self.STATUS_FLOW.index(self.status)
+        return self.STATUS_FLOW[index + 1] if index + 1 < len(self.STATUS_FLOW) else None
+
+    def can_transition_to(self, new_status):
+        return new_status == self.next_status()
+
+    def to_dict(self):
+        return asdict(self)
+
+
+@dataclass
+class Notification:
+    """A message delivered to one user. Starts Unread; read_date is set when the user reads it. (Omar Obeid)"""
+
+    TYPES = ["Incident Assignment", "Security Alert", "System Notification", "Threat Alert", "Vulnerability Alert"]
+    SEVERITIES = ["Low", "Medium", "High", "Critical"]
+    STATUSES = ["Unread", "Read"]
+
+    notification_id: int
+    user_id: int
+    title: str
+    message: str
+    notification_type: str
+    severity_level: str
+    status: str
+    creation_date: str
+    read_date: Optional[str]
+
+    def to_dict(self):
+        return asdict(self)
+
+
+@dataclass
+class ResponseAction:
+    """One numbered step of a playbook. Pending -> In Progress -> Completed. (Omar Obeid)"""
+
+    STATUS_FLOW = ["Pending", "In Progress", "Completed"]
+
+    action_id: int
+    playbook_id: int
+    action_description: str
+    step_number: int
+    status: str
+    assigned_user_id: Optional[int]
+    completion_date: Optional[str]
+
+    def next_status(self):
+        index = self.STATUS_FLOW.index(self.status)
+        return self.STATUS_FLOW[index + 1] if index + 1 < len(self.STATUS_FLOW) else None
+
+    def can_transition_to(self, new_status):
+        return new_status == self.next_status()
+
+    def to_dict(self):
+        return asdict(self)
+
+
+@dataclass
+class Playbook:
+    """A predefined incident response procedure made of ordered ResponseActions. (Omar Obeid)"""
+
+    SEVERITIES = ["Low", "Medium", "High", "Critical"]
+
+    playbook_id: int
+    playbook_name: str
+    description: str
+    incident_category: str
+    severity_level: str
+    created_by: Optional[int]
+    creation_date: str
+    actions: List[ResponseAction] = field(default_factory=list)
+
+    def progress(self):
+        done = sum(1 for a in self.actions if a.status == "Completed")
+        return {"total_steps": len(self.actions), "completed_steps": done,
+                "percent_complete": round(100 * done / len(self.actions)) if self.actions else 0}
+
+    def to_dict(self):
+        data = asdict(self)
+        data["actions"] = [a.to_dict() for a in self.actions]
+        data["progress"] = self.progress()
+        return data
+
+
+# ---------------------------------------------------------------- Services 7-9 repositories (Omar Obeid)
+class VulnerabilityRepository(BaseRepository):
+    table, pk, entity = "vulnerabilities", "vulnerability_id", Vulnerability
+
+    def find_duplicate(self, cve_identifier, asset_id):
+        """The same CVE already recorded on the same asset, or None."""
+        rows = self._query("SELECT * FROM vulnerabilities WHERE cve_identifier = ? COLLATE NOCASE "
+                           "AND affected_asset_id = ?", (cve_identifier, asset_id))
+        return self._to_entity(rows[0]) if rows else None
+
+
+class NotificationRepository(BaseRepository):
+    table, pk, entity = "notifications", "notification_id", Notification
+
+    def get_all(self):
+        """Newest first, like an inbox."""
+        return [self._to_entity(r) for r in self._query("SELECT * FROM notifications ORDER BY notification_id DESC")]
+
+    def for_user(self, user_id):
+        rows = self._query("SELECT * FROM notifications WHERE user_id = ? ORDER BY notification_id DESC", (user_id,))
+        return [self._to_entity(r) for r in rows]
+
+    def filter(self, user_id=None, username=None, notification_type=None, severity=None, status=None):
+        """Combine any of the filters with AND; every value is a bound parameter."""
+        clauses, params = [], []
+        if user_id is not None:
+            clauses.append("user_id = ?")
+            params.append(user_id)
+        if username is not None:
+            clauses.append("user_id IN (SELECT user_id FROM users WHERE username = ? COLLATE NOCASE)")
+            params.append(username)
+        for column, value in (("notification_type", notification_type), ("severity_level", severity),
+                              ("status", status)):
+            if value is not None:
+                clauses.append(f"{column} = ?")
+                params.append(value)
+        where = " WHERE " + " AND ".join(clauses) if clauses else ""
+        rows = self._query(f"SELECT * FROM notifications{where} ORDER BY notification_id DESC", tuple(params))
+        return [self._to_entity(r) for r in rows]
+
+    def mark_read(self, notification_id):
+        self._execute("UPDATE notifications SET status = 'Read', read_date = datetime('now') "
+                      "WHERE notification_id = ?", (notification_id,))
+        return self.get_by_id(notification_id)
+
+
+class ActionRepository(BaseRepository):
+    table, pk, entity = "response_actions", "action_id", ResponseAction
+
+    def for_playbook(self, playbook_id):
+        rows = self._query("SELECT * FROM response_actions WHERE playbook_id = ? ORDER BY step_number",
+                           (playbook_id,))
+        return [self._to_entity(r) for r in rows]
+
+    def step_taken(self, playbook_id, step_number):
+        return bool(self._query("SELECT 1 FROM response_actions WHERE playbook_id = ? AND step_number = ?",
+                                (playbook_id, step_number)))
+
+    def unfinished_before(self, playbook_id, step_number):
+        """Earlier steps of the playbook that are not Completed yet."""
+        rows = self._query("SELECT * FROM response_actions WHERE playbook_id = ? AND step_number < ? "
+                           "AND status != 'Completed' ORDER BY step_number", (playbook_id, step_number))
+        return [self._to_entity(r) for r in rows]
+
+
+class PlaybookRepository(BaseRepository):
+    table, pk, entity = "playbooks", "playbook_id", Playbook
+
+    def __init__(self):
+        self.actions = ActionRepository()
+
+    def get_by_id(self, record_id, with_actions=True):
+        playbook = super().get_by_id(record_id)
+        if playbook and with_actions:
+            playbook.actions = self.actions.for_playbook(record_id)
+        return playbook
+
+    def get_all(self):
+        playbooks = super().get_all()
+        for playbook in playbooks:
+            playbook.actions = self.actions.for_playbook(playbook.playbook_id)
+        return playbooks
+
+    def find_by_name(self, name):
+        rows = self._query("SELECT * FROM playbooks WHERE playbook_name = ? COLLATE NOCASE", (name,))
+        return self._to_entity(rows[0]) if rows else None
